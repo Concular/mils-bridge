@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ops-settings-precedence-title ops-settings-precedence-desc">
+      <title id="ops-settings-precedence-title">Where an upstream credential comes from</title>
+      <desc id="ops-settings-precedence-desc">Layer stack showing the precedence the BFF applies when it resolves an upstream URL or credential at request time: the persisted Settings row wins, then environment variables, then — for the MILS proxy only — the Authorization header forwarded from the browser, and finally nothing, in which case the call goes out unauthenticated.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#009634"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- direction indicator (left margin) -->
+      <text x="40" y="60" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">CHECKED FIRST</text>
+      <line x1="72" y1="76" x2="72" y2="316" stroke="#666666" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="40" y="344" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">FALLS THROUGH</text>
+
+      <!-- stack outline -->
+      <rect x="140" y="68" width="800" height="256" rx="6" fill="#f7f7ff"/>
+      <rect x="140" y="68" width="800" height="256" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+
+      <!-- L1 · Settings row (focal) -->
+      <rect x="140" y="68" width="800" height="64" rx="6" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1.2"/>
+      <text x="164" y="104" fill="#2736c8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">01</text>
+      <text x="220" y="105" fill="#000000" font-size="16" font-weight="600" font-family="'Inter', sans-serif">Settings row</text>
+      <text x="916" y="98" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">IntegrationSettings · SQLite · id = singleton</text>
+      <text x="916" y="112" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">saved from /integrations/&lt;id&gt; · applied without restart</text>
+
+      <!-- L2 · Environment -->
+      <line x1="140" y1="132" x2="940" y2="132" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+      <text x="164" y="168" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">02</text>
+      <text x="220" y="169" fill="#000000" font-size="16" font-weight="600" font-family="'Inter', sans-serif">Environment</text>
+      <text x="916" y="162" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">MILS_JWT · CONCORE_TOKEN, then CONCORE_API_KEY · GOOGLE_CLIENT_*</text>
+      <text x="916" y="176" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">config/configuration.ts · read once at boot</text>
+
+      <!-- L3 · Request -->
+      <line x1="140" y1="196" x2="940" y2="196" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+      <text x="164" y="232" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">03</text>
+      <text x="220" y="233" fill="#000000" font-size="16" font-weight="600" font-family="'Inter', sans-serif">Request</text>
+      <text x="916" y="226" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">Authorization header forwarded from the browser</text>
+      <text x="916" y="240" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">MILS proxy only · mils.client.ts authHeaders()</text>
+
+      <!-- L4 · Nothing -->
+      <line x1="140" y1="260" x2="940" y2="260" stroke="rgba(0,0,0,0.12)" stroke-width="1"/>
+      <text x="164" y="296" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">04</text>
+      <text x="220" y="297" fill="#000000" font-size="16" font-weight="600" font-family="'Inter', sans-serif">Nothing</text>
+      <text x="916" y="290" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">the upstream call goes out without a credential</text>
+      <text x="916" y="304" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">connection test reports source = none</text>
+
+      <!-- legend -->
+      <line x1="40" y1="368" x2="960" y2="368" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <text x="40" y="392" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <rect x="120" y="384" width="12" height="12" rx="2" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1"/>
+      <text x="140" y="393" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">WINS WHEN SET — THE ONLY LAYER THE CONSOLE WRITES</text>
+      <rect x="480" y="384" width="12" height="12" rx="2" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="500" y="393" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">FALLBACK, CHECKED IN ORDER</text>
+    </svg>

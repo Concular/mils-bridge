@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="access-resolution-ladder-title access-resolution-ladder-desc">
+      <title id="access-resolution-ladder-title">Access resolution — most specific wins</title>
+      <desc id="access-resolution-ladder-desc">Flowchart of resolveAccess: a node and element pair is checked first for an element rule (mode CUSTOM), then for an element mode of ALLOW_ALL or BLOCK_ALL, then for the node's own default, and finally falls through to the global default policy; every level answers only when it has a row, otherwise it inherits from the next.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- geometry: diamonds centred at x=280, decision column at x=720 -->
+      <!-- ── arrows (before shapes) ──────────────────────────────────── -->
+      <!-- start → D1 -->
+      <line x1="280" y1="72" x2="280" y2="104" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- D1 → D2 (no) -->
+      <line x1="280" y1="176" x2="280" y2="216" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="292" y="188" width="88" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="296" y="197" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">NO RULE</text>
+
+      <!-- D2 → D3 (no) -->
+      <line x1="280" y1="288" x2="280" y2="328" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="292" y="300" width="88" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="296" y="309" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">INHERIT</text>
+
+      <!-- D3 → GLOBAL (no) -->
+      <line x1="280" y1="400" x2="280" y2="440" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="292" y="412" width="88" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="296" y="421" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">INHERIT</text>
+
+      <!-- D1 → decision (yes, right) -->
+      <line x1="376" y1="140" x2="632" y2="140" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="452" y="120" width="104" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="504" y="129" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ELEMENT_RULE</text>
+
+      <!-- D2 → decision (yes, right) -->
+      <line x1="376" y1="252" x2="632" y2="252" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="452" y="232" width="104" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="504" y="241" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ELEMENT_MODE</text>
+
+      <!-- D3 → decision (yes, right) -->
+      <line x1="376" y1="364" x2="632" y2="364" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="436" y="344" width="136" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="504" y="353" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PRINCIPAL_DEFAULT</text>
+
+      <!-- GLOBAL → decision (right, accent: the fail-closed floor) -->
+      <line x1="376" y1="468" x2="632" y2="468" stroke="#2736c8" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="468" y="448" width="72" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="504" y="457" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">GLOBAL</text>
+
+      <!-- ── shapes ──────────────────────────────────────────────────── -->
+      <!-- start oval -->
+      <rect x="192" y="40" width="176" height="32" rx="16" fill="#f7f7ff"/>
+      <rect x="192" y="40" width="176" height="32" rx="16" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="60" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">(node, element)</text>
+
+      <!-- D1: element rule for this node? -->
+      <polygon points="280,104 376,140 280,176 184,140" fill="#f7f7ff"/>
+      <polygon points="280,104 376,140 280,176 184,140" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="136" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Rule for this node?</text>
+      <text x="280" y="152" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">mode = CUSTOM</text>
+
+      <!-- D2: element mode -->
+      <polygon points="280,216 376,252 280,288 184,252" fill="#f7f7ff"/>
+      <polygon points="280,216 376,252 280,288 184,252" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="248" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Element mode set?</text>
+      <text x="280" y="264" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ALLOW_ALL · BLOCK_ALL</text>
+
+      <!-- D3: node default -->
+      <polygon points="280,328 376,364 280,400 184,364" fill="#f7f7ff"/>
+      <polygon points="280,328 376,364 280,400 184,364" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="360" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Node default set?</text>
+      <text x="280" y="376" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ActorAccessDefault</text>
+
+      <!-- GLOBAL step -->
+      <rect x="184" y="440" width="192" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="184" y="440" width="192" height="56" rx="6" fill="rgba(0,0,0,0.05)" stroke="#666666" stroke-width="1"/>
+      <text x="280" y="464" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Global default policy</text>
+      <text x="280" y="482" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">AccessPolicy · ships BLOCK</text>
+
+      <!-- decision (focal, tall) -->
+      <rect x="632" y="104" width="176" height="392" rx="6" fill="#f7f7ff"/>
+      <rect x="632" y="104" width="176" height="392" rx="6" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1.2"/>
+      <text x="720" y="292" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Decision</text>
+      <text x="720" y="312" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ALLOW | BLOCK</text>
+      <text x="720" y="328" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">+ source</text>
+
+      <!-- editorial aside -->
+      <text x="40" y="528" fill="#666666" font-size="14" font-style="italic" font-family="'DM Sans', sans-serif">An absent row is INHERIT: the tables only hold what someone decided.</text>
+
+      <!-- ── legend strip ────────────────────────────────────────────── -->
+      <line x1="40" y1="548" x2="920" y2="548" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <text x="40" y="572" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <polygon points="126,562 134,568 126,574 118,568" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="144" y="573" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">LEVEL (ANSWERS ONLY WITH A ROW)</text>
+      <rect x="376" y="562" width="12" height="12" rx="2" fill="rgba(0,0,0,0.05)" stroke="#666666" stroke-width="1"/>
+      <text x="396" y="573" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">FLOOR</text>
+      <rect x="464" y="562" width="12" height="12" rx="2" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1"/>
+      <text x="484" y="573" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">RESOLUTION</text>
+      <line x1="592" y1="568" x2="620" y2="568" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="632" y="573" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">LABEL = SOURCE ON THE DECISION</text>
+    </svg>

@@ -1,0 +1,9 @@
+# Used by the `tls` profile in compose.yaml. Caddy gets a certificate for
+# BRIDGE_DOMAIN automatically and forwards everything to the one container.
+#
+# There is no path routing here on purpose: /api/*, /rest/* (the path peer
+# nodes call) and the console are the same origin and the same process, so
+# there is nothing to split and nothing to rewrite.
+{$BRIDGE_DOMAIN} {
+	reverse_proxy bridge:8080
+}

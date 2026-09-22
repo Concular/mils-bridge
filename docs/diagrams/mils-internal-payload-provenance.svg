@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mils-internal-payload-provenance-title mils-internal-payload-provenance-desc">
+      <title id="mils-internal-payload-provenance-title">Where an ItemData payload comes from</title>
+      <desc id="mils-internal-payload-provenance-desc">Data-flow diagram showing the three writers of the MilsItemPayload store — the three registration services (best-effort or size-checked), the console's PUT item-payloads route, and the backfill script that creates missing rows from stored snapshots — and its two readers: the item-payloads GET route and the unauthenticated mils-internal ItemData endpoint.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- zones -->
+      <rect x="40" y="48" width="280" height="296" rx="8" fill="rgba(0,0,0,0.02)" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <rect x="56" y="52" width="60" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="86" y="61" fill="rgba(0,0,0,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">WRITERS</text>
+
+      <rect x="640" y="48" width="280" height="296" rx="8" fill="rgba(0,0,0,0.02)" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <rect x="656" y="52" width="60" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="686" y="61" fill="rgba(0,0,0,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">READERS</text>
+
+      <!-- ── arrows ──────────────────────────────────────────────────── -->
+      <!-- registration → store (enters top-left of store) -->
+      <path d="M280,112 H352 Q360,112 360,120 V172 Q360,180 368,180 H392" fill="none" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="284" y="92" width="72" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="320" y="101" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">UPSERT</text>
+
+      <!-- console PUT → store (straight) -->
+      <line x1="280" y1="196" x2="392" y2="196" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="300" y="200" width="60" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="330" y="209" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">UPSERT</text>
+
+      <!-- backfill → store (enters bottom-left) -->
+      <path d="M280,280 H352 Q360,280 360,272 V220 Q360,212 368,212 H392" fill="none" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="284" y="288" width="100" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="334" y="297" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">CREATE IF MISSING</text>
+
+      <!-- store → GET item-payloads (exits top-right) -->
+      <path d="M568,180 H592 Q600,180 600,172 V120 Q600,112 608,112 H672" fill="none" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="608" y="92" width="56" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="636" y="101" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">JSON</text>
+
+      <!-- store → ItemData (exits bottom-right, accent) -->
+      <path d="M568,212 H592 Q600,212 600,220 V272 Q600,280 608,280 H672" fill="none" stroke="#2736c8" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="588" y="288" width="88" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="632" y="297" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RAW STRING</text>
+
+      <!-- ── nodes ───────────────────────────────────────────────────── -->
+      <!-- registration services -->
+      <rect x="72" y="80" width="208" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="72" y="80" width="208" height="64" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="176" y="106" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Registration ×3</text>
+      <text x="176" y="124" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Concore · Drive · exchange</text>
+
+      <!-- console PUT -->
+      <rect x="72" y="168" width="208" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="72" y="168" width="208" height="56" rx="6" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <text x="176" y="192" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Console</text>
+      <text x="176" y="208" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">PUT item-payloads/:milsId</text>
+
+      <!-- backfill script -->
+      <rect x="72" y="248" width="208" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="72" y="248" width="208" height="64" rx="6" fill="rgba(0,0,0,0.02)" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="176" y="274" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Backfill script</text>
+      <text x="176" y="292" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">from concoreSnapshot</text>
+
+      <!-- store (centre) -->
+      <rect x="392" y="156" width="176" height="80" rx="6" fill="#f7f7ff"/>
+      <rect x="392" y="156" width="176" height="80" rx="6" fill="rgba(0,0,0,0.05)" stroke="#666666" stroke-width="1"/>
+      <rect x="400" y="164" width="40" height="12" rx="2" fill="transparent" stroke="rgba(102,102,102,0.40)" stroke-width="0.8"/>
+      <text x="420" y="173" fill="rgba(102,102,102,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SQLITE</text>
+      <text x="480" y="200" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">MilsItemPayload</text>
+      <text x="480" y="218" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">milsItemId ↦ JSON ≤ 64 KiB</text>
+
+      <!-- GET item-payloads -->
+      <rect x="672" y="80" width="216" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="672" y="80" width="216" height="64" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="780" y="106" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Integration API</text>
+      <text x="780" y="124" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">GET item-payloads/:milsId · guarded</text>
+
+      <!-- ItemData (focal) -->
+      <rect x="672" y="248" width="216" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="672" y="248" width="216" height="64" rx="6" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1.2"/>
+      <text x="780" y="274" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">mils-internal ItemData</text>
+      <text x="780" y="292" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">text/plain · unauthenticated</text>
+
+      <!-- ── legend strip ────────────────────────────────────────────── -->
+      <line x1="40" y1="392" x2="920" y2="392" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <text x="40" y="416" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <rect x="120" y="408" width="12" height="12" rx="2" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="140" y="417" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">BFF SERVICE / ROUTE</text>
+      <rect x="288" y="408" width="12" height="12" rx="2" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <text x="308" y="417" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">CONSOLE USER</text>
+      <rect x="416" y="408" width="12" height="12" rx="2" fill="rgba(0,0,0,0.02)" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="436" y="417" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">OPERATOR SCRIPT</text>
+      <rect x="560" y="408" width="12" height="12" rx="2" fill="rgba(0,0,0,0.05)" stroke="#666666" stroke-width="1"/>
+      <text x="580" y="417" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">STORE</text>
+      <rect x="640" y="408" width="12" height="12" rx="2" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1"/>
+      <text x="660" y="417" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">THE OPEN SURFACE</text>
+    </svg>

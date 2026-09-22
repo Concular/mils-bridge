@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 680" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="actors-token-verification-title actors-token-verification-desc">
+      <title id="actors-token-verification-title">Actor token verification</title>
+      <desc id="actors-token-verification-desc">Flowchart of how the BFF verifies an actor bearer JWT: the sub claim must name an enabled registration, the RS256 signature and issuer must check out against the stored certificate, the lifetime must be within the cap and the certificate unexpired; every failure ends in one uniform 401.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- yes path (vertical) -->
+      <line x1="400" y1="80" x2="400" y2="108" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="400" y1="188" x2="400" y2="204" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="400" y1="284" x2="400" y2="300" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="400" y1="380" x2="400" y2="396" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="400" y1="476" x2="400" y2="500" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="400" y1="540" x2="400" y2="572" stroke="#2736c8" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+      <!-- no exits → merge bus at x=660 -->
+      <line x1="528" y1="148" x2="660" y2="148" stroke="#666666" stroke-width="1.2"/>
+      <line x1="528" y1="244" x2="660" y2="244" stroke="#666666" stroke-width="1.2"/>
+      <line x1="528" y1="340" x2="660" y2="340" stroke="#666666" stroke-width="1.2"/>
+      <line x1="528" y1="436" x2="660" y2="436" stroke="#666666" stroke-width="1.2"/>
+      <line x1="660" y1="148" x2="660" y2="500" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <circle cx="660" cy="148" r="4" fill="#000000"/>
+      <circle cx="660" cy="244" r="4" fill="#000000"/>
+      <circle cx="660" cy="340" r="4" fill="#000000"/>
+      <circle cx="660" cy="436" r="4" fill="#000000"/>
+
+      <!-- branch labels -->
+      <rect x="408" y="190" width="28" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="412" y="199" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">YES</text>
+      <rect x="408" y="286" width="28" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="412" y="295" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">YES</text>
+      <rect x="408" y="382" width="28" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="412" y="391" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">YES</text>
+      <rect x="408" y="480" width="28" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="412" y="489" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">YES</text>
+
+      <rect x="580" y="128" width="28" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="594" y="137" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+      <rect x="580" y="224" width="28" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="594" y="233" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+      <rect x="580" y="320" width="28" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="594" y="329" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+      <rect x="580" y="416" width="28" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="594" y="425" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+
+      <!-- start -->
+      <rect x="280" y="40" width="240" height="40" rx="20" fill="#f7f7ff"/>
+      <rect x="280" y="40" width="240" height="40" rx="20" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <text x="400" y="64" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Authorization: Bearer &lt;jwt&gt;</text>
+
+      <!-- D1 -->
+      <polygon points="400,108 528,148 400,188 272,148" fill="#f7f7ff"/>
+      <polygon points="400,108 528,148 400,188 272,148" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="400" y="145" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">sub names a registered,</text>
+      <text x="400" y="160" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">enabled actor?</text>
+
+      <!-- D2 -->
+      <polygon points="400,204 528,244 400,284 272,244" fill="#f7f7ff"/>
+      <polygon points="400,204 528,244 400,284 272,244" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="400" y="241" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">RS256 against stored cert,</text>
+      <text x="400" y="256" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">iss · exp/nbf ± tolerance?</text>
+
+      <!-- D3 -->
+      <polygon points="400,300 528,340 400,380 272,340" fill="#f7f7ff"/>
+      <polygon points="400,300 528,340 400,380 272,340" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="400" y="337" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">lifetime within the cap?</text>
+      <text x="400" y="352" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">exp − iat ≤ ACTOR_JWT_MAX_TTL</text>
+
+      <!-- D4 -->
+      <polygon points="400,396 528,436 400,476 272,436" fill="#f7f7ff"/>
+      <polygon points="400,396 528,436 400,476 272,436" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="400" y="433" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">certificate still valid?</text>
+      <text x="400" y="448" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">certNotAfter &gt; now</text>
+
+      <!-- step -->
+      <rect x="280" y="500" width="240" height="40" rx="6" fill="#f7f7ff"/>
+      <rect x="280" y="500" width="240" height="40" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="400" y="517" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">touch lastSeenAt · attach actor</text>
+      <text x="400" y="531" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">best-effort timestamp</text>
+
+      <!-- end: success (focal) -->
+      <rect x="280" y="572" width="240" height="40" rx="20" fill="#f7f7ff"/>
+      <rect x="280" y="572" width="240" height="40" rx="20" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1.2"/>
+      <text x="400" y="589" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">handler runs</text>
+      <text x="400" y="603" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">@CurrentActor() · req.actor</text>
+
+      <!-- end: 401 -->
+      <rect x="560" y="500" width="200" height="40" rx="20" fill="#f7f7ff"/>
+      <rect x="560" y="500" width="200" height="40" rx="20" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <text x="660" y="517" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">401 · Invalid actor token.</text>
+      <text x="660" y="531" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">reason logged server-side only</text>
+
+      <!-- legend -->
+      <line x1="40" y1="632" x2="920" y2="632" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <text x="40" y="656" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <rect x="120" y="646" width="20" height="12" rx="6" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <text x="148" y="656" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">START / END</text>
+      <polygon points="248,646 260,652 248,658 236,652" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="268" y="656" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">DECISION</text>
+      <rect x="344" y="646" width="20" height="12" rx="2" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="372" y="656" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">STEP</text>
+      <circle cx="424" cy="652" r="4" fill="#000000"/>
+      <text x="436" y="656" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">MERGE</text>
+      <line x1="496" y1="652" x2="524" y2="652" stroke="#2736c8" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="536" y="656" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">SUCCESS PATH (FOCAL)</text>
+    </svg>
