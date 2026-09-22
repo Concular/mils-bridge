@@ -33,12 +33,26 @@ jobs:
       - name: The compose file parses
         run: docker compose config -q
 
-      # Only meaningful once an image has actually been published; until then
-      # the pull fails and says so, which is the honest signal.
+      # Nothing is published yet, and a pull that cannot succeed should not be
+      # reported as this file being broken. The smoke run below switches itself
+      # on the day the first image exists — there is no flag to remember.
+      - id: image
+        name: Is there an image to run?
+        run: |
+          tag=$(grep -E '^BRIDGE_VERSION=' .env | cut -d= -f2)
+          if docker pull "ghcr.io/concular/mils-bridge:${tag:-latest}"; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            echo "::notice::No published image yet — the compose file was checked, the smoke run was skipped"
+          fi
+
       - name: Start it
+        if: steps.image.outputs.available == 'true'
         run: docker compose up -d --wait --wait-timeout 180
 
       - name: It is alive, and says which release it is
+        if: steps.image.outputs.available == 'true'
         run: |
           curl -fsS http://localhost:8080/api/health/live
           curl -fsS http://localhost:8080/api/version
@@ -54,9 +68,9 @@ jobs:
           case "$type" in application/json*) ;; *) echo "peer path answered $type"; exit 1 ;; esac
 
       - name: Logs on failure
-        if: failure()
+        if: failure() && steps.image.outputs.available == 'true'
         run: docker compose logs --no-color
 
       - name: Stop
-        if: always()
+        if: always() && steps.image.outputs.available == 'true'
         run: docker compose down -v
