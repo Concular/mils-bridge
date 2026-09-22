@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 580" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ops-trust-zones-title ops-trust-zones-desc">
+      <title id="ops-trust-zones-title">Trust zones and what crosses them</title>
+      <desc id="ops-trust-zones-desc">Architecture diagram of the three trust zones: callers (the console with a session cookie, a node with an actor JWT, and anonymous mils-internal reads), the BFF host where the NestJS process keeps plaintext secrets and OAuth tokens in SQLite and registered file bytes on disk, and the upstreams the BFF reaches with a minted MILS JWT, the Concore API key and per-user Google tokens.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#009634"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- zones -->
+      <rect x="40" y="52" width="224" height="440" rx="8" fill="rgba(0,0,0,0.02)" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <rect x="52" y="56" width="72" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="88" y="65" fill="rgba(0,0,0,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">CALLERS</text>
+
+      <rect x="312" y="52" width="336" height="440" rx="8" fill="rgba(39,54,200,0.03)" stroke="rgba(39,54,200,0.50)" stroke-width="0.8" stroke-dasharray="4,4"/>
+      <rect x="324" y="56" width="132" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="390" y="65" fill="rgba(0,0,0,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">BFF HOST · PROCESS + DISK</text>
+
+      <rect x="696" y="52" width="264" height="440" rx="8" fill="rgba(0,0,0,0.02)" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <rect x="708" y="56" width="80" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="748" y="65" fill="rgba(0,0,0,0.40)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.14em">UPSTREAMS</text>
+
+      <!-- arrows (before nodes) -->
+      <!-- console -> BFF -->
+      <line x1="232" y1="120" x2="376" y2="120" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="260" y="100" width="88" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="304" y="109" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SESSION COOKIE</text>
+      <!-- actor -> BFF -->
+      <path d="M232,260 H296 Q304,260 304,252 V148 Q304,140 312,140 H376" fill="none" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="236" y="240" width="56" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="264" y="249" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ACTOR JWT</text>
+      <!-- anonymous -> BFF (dashed) -->
+      <path d="M232,388 H280 Q288,388 288,380 V168 Q288,160 296,160 H376" fill="none" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="208" y="296" width="72" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="244" y="305" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO CREDENTIAL</text>
+      <!-- BFF -> SQLite (focal) -->
+      <line x1="516" y1="180" x2="516" y2="252" stroke="#2736c8" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="524" y="208" width="68" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="558" y="217" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">READS SECRETS</text>
+      <!-- BFF -> file store -->
+      <path d="M444,180 V196 Q444,204 436,204 H352 Q344,204 344,212 V404 Q344,412 352,412 H376" fill="none" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="272" y="300" width="64" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="304" y="309" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">WRITES BLOBS</text>
+      <!-- BFF -> MILS -->
+      <line x1="584" y1="120" x2="728" y2="120" stroke="#009634" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="624" y="100" width="64" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="656" y="109" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MINTED JWT</text>
+      <!-- BFF -> Concore -->
+      <path d="M584,140 H656 Q664,140 664,148 V252 Q664,260 672,260 H728" fill="none" stroke="#009634" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="672" y="196" width="56" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="700" y="205" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">X-API-KEY</text>
+      <!-- BFF -> Google -->
+      <path d="M584,160 H616 Q624,160 624,168 V380 Q624,388 632,388 H728" fill="none" stroke="#009634" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="632" y="296" width="64" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="664" y="305" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">OAUTH TOKENS</text>
+
+      <!-- nodes: callers -->
+      <rect x="72" y="100" width="160" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="72" y="100" width="160" height="64" rx="6" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <rect x="80" y="108" width="28" height="12" rx="2" fill="transparent" stroke="rgba(153,153,153,0.40)" stroke-width="0.8"/>
+      <text x="94" y="117" fill="rgba(153,153,153,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">WEB</text>
+      <text x="152" y="136" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Console user</text>
+      <text x="152" y="152" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">httpOnly cookie · 12 h</text>
+
+      <rect x="72" y="228" width="160" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="72" y="228" width="160" height="64" rx="6" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <rect x="80" y="236" width="36" height="12" rx="2" fill="transparent" stroke="rgba(153,153,153,0.40)" stroke-width="0.8"/>
+      <text x="98" y="245" fill="rgba(153,153,153,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ACTOR</text>
+      <text x="152" y="264" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Node</text>
+      <text x="152" y="280" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">JWT signed with its MILS cert</text>
+
+      <rect x="72" y="356" width="160" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="72" y="356" width="160" height="64" rx="6" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <rect x="80" y="364" width="36" height="12" rx="2" fill="transparent" stroke="rgba(153,153,153,0.40)" stroke-width="0.8"/>
+      <text x="98" y="373" fill="rgba(153,153,153,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ANON</text>
+      <text x="152" y="392" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Anyone</text>
+      <text x="152" y="408" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/api/mils-internal/* · proxies</text>
+
+      <!-- nodes: BFF host -->
+      <rect x="376" y="100" width="208" height="80" rx="6" fill="#f7f7ff"/>
+      <rect x="376" y="100" width="208" height="80" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <rect x="384" y="108" width="28" height="12" rx="2" fill="transparent" stroke="rgba(0,0,0,0.40)" stroke-width="0.8"/>
+      <text x="398" y="117" fill="rgba(0,0,0,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="480" y="144" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">NestJS BFF</text>
+      <text x="480" y="160" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/api · one guard per route family</text>
+
+      <rect x="376" y="252" width="208" height="72" rx="6" fill="#f7f7ff"/>
+      <rect x="376" y="252" width="208" height="72" rx="6" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1.2"/>
+      <rect x="384" y="260" width="40" height="12" rx="2" fill="transparent" stroke="rgba(39,54,200,0.40)" stroke-width="0.8"/>
+      <text x="404" y="269" fill="rgba(39,54,200,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SQLITE</text>
+      <text x="480" y="292" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Settings · sessions · tokens</text>
+      <text x="480" y="308" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">secrets stored plaintext</text>
+
+      <rect x="376" y="380" width="208" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="376" y="380" width="208" height="64" rx="6" fill="rgba(0,0,0,0.05)" stroke="#666666" stroke-width="1"/>
+      <rect x="384" y="388" width="32" height="12" rx="2" fill="transparent" stroke="rgba(102,102,102,0.40)" stroke-width="0.8"/>
+      <text x="400" y="397" fill="rgba(102,102,102,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DISK</text>
+      <text x="480" y="416" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">File store</text>
+      <text x="480" y="432" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">FILE_STORE_DIR · sha256 blobs</text>
+
+      <!-- nodes: upstreams -->
+      <rect x="728" y="100" width="200" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="728" y="100" width="200" height="64" rx="6" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <rect x="736" y="108" width="28" height="12" rx="2" fill="transparent" stroke="rgba(0,0,0,0.30)" stroke-width="0.8"/>
+      <text x="750" y="117" fill="rgba(0,0,0,0.60)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="828" y="136" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">MILS</text>
+      <text x="828" y="152" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">RS256 from the signing key</text>
+
+      <rect x="728" y="228" width="200" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="728" y="228" width="200" height="64" rx="6" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <rect x="736" y="236" width="28" height="12" rx="2" fill="transparent" stroke="rgba(0,0,0,0.30)" stroke-width="0.8"/>
+      <text x="750" y="245" fill="rgba(0,0,0,0.60)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="828" y="264" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Concore</text>
+      <text x="828" y="280" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">API key + organisation id</text>
+
+      <rect x="728" y="356" width="200" height="64" rx="6" fill="#f7f7ff"/>
+      <rect x="728" y="356" width="200" height="64" rx="6" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <rect x="736" y="364" width="28" height="12" rx="2" fill="transparent" stroke="rgba(0,0,0,0.30)" stroke-width="0.8"/>
+      <text x="750" y="373" fill="rgba(0,0,0,0.60)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="828" y="392" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Google</text>
+      <text x="828" y="408" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">per console user · refresh token</text>
+
+      <!-- legend -->
+      <line x1="40" y1="524" x2="960" y2="524" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <text x="40" y="548" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <rect x="120" y="540" width="12" height="12" rx="2" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1"/>
+      <text x="140" y="549" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">HOLDS EVERY SECRET</text>
+      <rect x="288" y="540" width="12" height="12" rx="2" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <text x="308" y="549" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">CALLER</text>
+      <rect x="376" y="540" width="12" height="12" rx="2" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <text x="396" y="549" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">UPSTREAM</text>
+      <line x1="488" y1="544" x2="516" y2="544" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="528" y="549" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">UNAUTHENTICATED</text>
+      <line x1="656" y1="544" x2="684" y2="544" stroke="#009634" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="696" y="549" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">SERVER-TO-SERVER HTTP</text>
+      <line x1="868" y1="544" x2="896" y2="544" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="908" y="549" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">HTTP</text>
+    </svg>

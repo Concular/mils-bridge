@@ -1,0 +1,76 @@
+# Does the published compose file still start the published image?
+#
+# This repository has no source to compile — what it can get wrong is a compose
+# file that references a tag nobody published, an env variable the image no
+# longer reads, or a quickstart that no longer reaches /setup. So the check is
+# to run it.
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Weekly, because `latest` moves underneath this file even when nothing here
+  # changes: a release that breaks the published compose file should be found
+  # by us and not by someone cloning the repo.
+  schedule:
+    - cron: '17 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: A throwaway .env
+        run: |
+          cp .env.example .env
+          printf '\nMILS_ACTOR_CODE_SELF=ci\n' >> .env
+
+      - name: The compose file parses
+        run: docker compose config -q
+
+      # Nothing is published yet, and a pull that cannot succeed should not be
+      # reported as this file being broken. The smoke run below switches itself
+      # on the day the first image exists — there is no flag to remember.
+      - id: image
+        name: Is there an image to run?
+        run: |
+          tag=$(grep -E '^BRIDGE_VERSION=' .env | cut -d= -f2)
+          if docker pull "ghcr.io/concular/mils-bridge:${tag:-latest}"; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            echo "::notice::No published image yet — the compose file was checked, the smoke run was skipped"
+          fi
+
+      - name: Start it
+        if: steps.image.outputs.available == 'true'
+        run: docker compose up -d --wait --wait-timeout 180
+
+      - name: It is alive, and says which release it is
+        if: steps.image.outputs.available == 'true'
+        run: |
+          curl -fsS http://localhost:8080/api/health/live
+          curl -fsS http://localhost:8080/api/version
+          # The first visit must offer first-run setup, not a login wall.
+          curl -fsS http://localhost:8080/api/auth/setup | grep -q needsSetup
+          # The console is served from the same origin...
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/)" = 200
+          # ...without the SPA fallback swallowing the path peer nodes call.
+          # The status does not matter (this request names no ItemTypeId, so a
+          # complaint is the correct answer) — being answered in JSON rather
+          # than in HTML is the whole point.
+          type=$(curl -s -o /dev/null -w '%{content_type}' http://localhost:8080/rest/MilsItems)
+          case "$type" in application/json*) ;; *) echo "peer path answered $type"; exit 1 ;; esac
+
+      - name: Logs on failure
+        if: failure() && steps.image.outputs.available == 'true'
+        run: docker compose logs --no-color
+
+      - name: Stop
+        if: always() && steps.image.outputs.available == 'true'
+        run: docker compose down -v

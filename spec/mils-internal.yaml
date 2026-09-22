@@ -1,0 +1,519 @@
+# Generated from the MILS Bridge source repository (apps/web/mils-internal.yaml). Edit it there, not here.
+openapi: 3.0.3
+info:
+  title: MILS internal API (served locally by the integration BFF)
+  version: 1
+  description: >-
+    The BLM contract ("BLM - OpenAPI 3.0" v1,
+    https://blockmaterials.dynabloqs.dev/rest) as served by the integration BFF
+    itself under /rest — the node's REST root — backed by its local store (ItemData
+    reads the MilsItemPayload table; ItemFile streams the locally stored copy of a
+    registered file; object accesses live in MilsObjectAccess) — these
+    endpoints are NOT forwarded to upstream MILS. The surface is
+    unauthenticated by default (MILS_INTERNAL_AUTH=open): no token, cookie, or
+    credential is required, which is the BLM contract as written. A deployment
+    that cannot publish anonymously may change that posture:
+
+
+      * open  (default) — as written above. No credential is checked, and the
+        bearerAuth scheme below does not apply.
+
+      * actor — the three item reads require a console session or a JWT signed
+        by an actor MILS publishes a certificate for, and the same per-element
+        access rules as /api/integration apply.
+
+      * node  — the same, and the caller must additionally resolve to a MILS
+        Node this bridge has synced: the token names it (a `node` claim, the
+        X-MILS-Node-Id header, or `sub`) and is verified against the
+        certificate of the actor that Node names as its owner
+        (NodeOwnerActorId), so a peer cannot claim to be a node it does not
+        own. POST /MilsObjectAccesses also requires a resolved node in this
+        mode; in the other two it stays open.
+
+
+    Reading an object access state follows the same posture as the write: its
+    id may be a MILS Object id, which MILS publishes and every peer knows, and
+    the answer is the CALLING node's access — so `node` mode requires a
+    resolved node there too. Under `open` and `actor` no credential is checked
+    and every caller resolves to the same anonymous principal.
+
+
+    Where this API answers: the MILS network's convention places a node's
+    node-to-node API at its REST root, `<NodeHostName>/rest` (for example
+    https://blockmaterials.dynabloqs.dev/rest/MilsObjectAccesses), and that is
+    the path this BFF serves — the `servers` entry below is that path, relative
+    to the node's own host. It is the only address for this surface; the BFF's
+    own `/api` prefix does not apply to it.
+
+
+    Two deviations from the BLM document are deliberate and marked per
+    operation: `ItemFile` is a BFF extension the BLM document does not define,
+    and operations the BFF does not serve yet say so in their description
+    (calling one answers 404 today).
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        A peer's own RS256 JWT, verified against the X.509 certificate MILS
+        publishes for the actor that signed it. Required only when this node
+        runs with MILS_INTERNAL_AUTH=actor or =node (see the API description);
+        under the default `open` posture no credential is sent or checked.
+
+
+        Claims follow the MILS convention:
+
+
+          * aud — one of THIS node's own names: `<our-actor-code>-rest-api` or
+            `<our-actor-code>-mils-api`. The audience names the RECIPIENT, and
+            each recipient names itself its own way: a token addressed to us
+            carries one of ours, a token addressed to MILS carries
+            `mils-rest-api`, and a token addressed to some other node carries
+            that node's name. So a peer that stamps its OWN
+            `<its-code>-rest-api` is reading the convention the other way round
+            and is refused — and a matching audience is what bounds replay
+            across recipients, since a token minted for one node is useless
+            against another. Confirm the exact values this deployment accepts
+            at GET /api/actor-registry/whoami (field `audience`), which is
+            authenticated and discloses nothing a holder of a valid token does
+            not already have. One carve-out: a caller resolving to the `mils`
+            actor may also stamp `mils-rest-api`, which is what MILS itself has
+            been observed minting. A deployment may pin the accepted list, or
+            accept any audience, via MILS_TOKEN_AUDIENCE.
+
+          * iss — the signing actor's ActorTokenIssuer, exactly as MILS
+            publishes it. A trailing slash is part of it.
+
+          * sub — the signing actor's ActorCode, matched unbraced and
+            case-insensitively. An ActorId or a NodeId is also accepted, as a
+            tolerance for peers that name themselves that way.
+
+
+          * exp — required. A token with no expiry claim is refused even when
+            its signature is good, because it would never expire; iat is
+            recommended but not required.
+
+
+        A conventional token names no node, so under MILS_INTERNAL_AUTH=node it
+        binds to one only when its actor owns exactly one enabled node.
+        Otherwise send the NodeId in the X-MILS-Node-Id header: it selects
+        which of that actor's nodes is calling, never whether the caller is
+        authenticated.
+servers:
+  - url: /rest
+paths:
+  /MilsItems:
+    get:
+      tags:
+        - MilsItems
+      summary: Returns a list of milsitems
+      description: >-
+        The items this node has registered under one MILS Object, of one item
+        type. Answered from the BFF's own ResourceMapping table — the same set
+        the MilsObjectAccesses handshake folds into an ObjectAccessState, so a
+        grant and this list describe the same object. Only REGISTERED items
+        appear; an element an operator archived is withdrawn from the
+        enumeration.
+
+
+        ItemDescription is derived locally, from the snapshot taken when the
+        element was registered. The MILS contract publishes no description for
+        an Item on either /Items or /Items/{id}, so there is no upstream field
+        being round-tripped here — expect the name this node shows its own
+        operators, not one MILS assigned.
+
+
+        FilterText is a case-insensitive substring match against that same
+        ItemDescription. AvailableRowCount is the number of matching rows
+        before SkipRowCount/MaxRowCount are applied; MaxRowCount defaults to 50
+        and is capped at 200.
+
+
+        Subject to the same MILS_INTERNAL_AUTH posture as the item reads below.
+        Under ACCESS_ENFORCEMENT=enforce the rows are additionally filtered to
+        those the calling actor or node may read, by the same rule that governs
+        ItemData, so the list can be shorter than the object.
+      parameters:
+        - name: FilterText
+          in: query
+          required: false
+          description: Filter the response.
+          schema:
+            type: string
+        - name: ItemTypeId
+          in: query
+          required: true
+          description: Filter the response.
+          schema:
+            type: string
+            pattern: '^\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}$'
+            example: '{b54fd06d-5c9f-441a-b132-0bc779c62de2}'
+        - name: MaxRowCount
+          in: query
+          required: false
+          description: Filter the response.
+          schema:
+            type: number
+            format: int64
+        - name: ObjectId
+          in: query
+          required: true
+          description: Filter the response.
+          schema:
+            type: string
+            pattern: '^\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}$'
+            example: '{6cb8eb2f-ba00-4f97-a76c-2d5d5b4b2c19}'
+        - name: SkipRowCount
+          in: query
+          required: false
+          description: Filter the response.
+          schema:
+            type: number
+            format: int64
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  AvailableRowCount:
+                    type: number
+                    format: int64
+                  MilsItems:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ItemDescription:
+                          type: string
+                        ItemId:
+                          type: string
+                          pattern: '^\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}$'
+                          example: '{104fa31f-55ea-4e76-baf3-8dd9386e6b90}'
+                        ObjectId:
+                          type: string
+                          pattern: '^\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}$'
+                          example: '{a6ce6de6-0453-4b74-b5b5-01e83164ae06}'
+  /MilsItems/{ObjectId}/BinaryData:
+    get:
+      tags:
+        - MilsItems
+      summary: Retrieves information for an existing milsitem based on the ID provided.
+      description: >-
+        The item's binary data, base64-encoded as text/plain — the BLM contract
+        types this response as a plain string. The bytes are usually a static
+        file, so they are served from the BFF's local file store; ItemFile is a
+        different endpoint over that same blob, streaming it verbatim with its
+        own content type and Content-Disposition. Answers 404 when no file is
+        stored for the item and 410 when the local copy is missing.
+
+
+        A conforming reader asks permission first — for the MILS **Object**
+        this item belongs to, NOT for the item. The path parameter below is an
+        ItemId; the id you POST to /MilsObjectAccesses is the ObjectId that
+        item's MILS record names (GET /Items/{id} publishes it). One grant
+        therefore covers every item of that object this node owns. Then read
+        the resulting record's ObjectAccessState. This node does not currently
+        require that on the read, but a peer that does will refuse an unasked
+        read — and so does this BFF's own client.
+      parameters:
+        - name: ObjectId
+          in: path
+          required: true
+          description: ID of the MilsItem to update (without accolades).
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The base64 of the stored bytes.
+          headers:
+            ETag:
+              description: Quoted SHA-256 of the underlying bytes.
+              schema:
+                type: string
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: byte
+        '404':
+          description: No stored file for this item.
+        '410':
+          description: The local copy is missing from the store; re-sync it from its source.
+  /MilsItems/{ObjectId}/ItemData:
+    get:
+      tags:
+        - MilsItems
+      summary: Retrieves information for an existing milsitem based on the ID provided.
+      description: >-
+        The stored payload for this MILS item, returned verbatim as text/plain
+        from the BFF's MilsItemPayload table. Answers 404 when no payload is
+        stored for the item.
+
+
+        A conforming reader asks permission first — for the MILS **Object**
+        this item belongs to, NOT for the item. The path parameter below is an
+        ItemId; the id you POST to /MilsObjectAccesses is the ObjectId that
+        item's MILS record names (GET /Items/{id} publishes it). One grant
+        therefore covers every item of that object this node owns. Then read
+        the resulting record's ObjectAccessState. This node does not currently
+        require that on the read, but a peer that does will refuse an unasked
+        read — and so does this BFF's own client.
+      parameters:
+        - name: ObjectId
+          in: path
+          required: true
+          description: ID of the MilsItem to update (without accolades).
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /MilsItems/{ObjectId}/ItemFile:
+    get:
+      tags:
+        - MilsItems
+      summary: Streams the locally stored file registered as this milsitem.
+      description: >-
+        BFF EXTENSION — not part of the BLM contract. The bytes of the file
+        (e.g. a Google Drive file) registered as this MILS item, served from
+        the BFF's local file store — never fetched from the source on read.
+        ItemData for the same item is the JSON descriptor (name, mime type,
+        size, sha256) pointing here. A conforming reader asks permission first
+        (POST /MilsObjectAccesses, for the MILS Object this item belongs to —
+        not for the item). Answers 410 when the local copy is missing.
+      parameters:
+        - name: ObjectId
+          in: path
+          required: true
+          description: ID of the MilsItem (without accolades).
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: The file bytes, with the stored Content-Type.
+          headers:
+            ETag:
+              description: Quoted SHA-256 of the bytes.
+              schema:
+                type: string
+            Content-Disposition:
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: No stored file for this item.
+        '410':
+          description: The local copy is missing from the store; re-sync it from its source.
+  /MilsItems/{ObjectId}/PropertyData:
+    get:
+      tags:
+        - MilsItems
+      summary: Retrieves information for an existing milsitem based on the ID provided.
+      description: >-
+        The property data stored for this MILS item, returned verbatim as
+        text/plain from the BFF's MilsItemPayload table. Answers 404 when none
+        is stored — the same answer, and the same words, as ItemData for an
+        item with no payload.
+
+
+        Opaque text, not JSON: the BLM contract types this 200 as a plain
+        string. What belongs in it is values against the schema MILS publishes
+        at /PropertyTypes for this item's ItemTypeId; this node does not
+        validate them against that schema, and does not serve /PropertyTypes
+        itself — the BLM document declares no such operation.
+
+
+        Set from this node's console, never derived. Registration has no source
+        for property data, so an item can have a payload and no property data
+        for its whole life.
+
+
+        NOTE the path parameter is an **ItemId**, despite being named ObjectId
+        — the same naming wart as ItemData, ItemFile and BinaryData above. Ask
+        permission for the MILS Object the item belongs to
+        (POST /MilsObjectAccesses); read the data for the item.
+      parameters:
+        - name: ObjectId
+          in: path
+          required: true
+          description: ID of the MilsItem to update (without accolades).
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /MilsObjectAccesses:
+    post:
+      tags:
+        - MilsObjectAccesses
+      summary: Add a new milsobjectaccess
+      description: >-
+        Ask this node for permission to read an object. Expect to call this
+        BEFORE the item reads above: a conforming reader asks first, and a
+        grant is what makes the payload available.
+
+
+        ObjectId is a MILS **Object** — a building, a site — and never an
+        ItemId. It is the granularity the network grants at, and the
+        granularity a human decides at: one record covers every item of that
+        object this node owns. If you hold an item id, GET /Items/{id} from
+        MILS and use the ObjectId it publishes.
+
+
+        Idempotent. One registration per (caller, object): asking again
+        re-decides and updates that record rather than filing a second, so a
+        retry after a timeout is safe and a client may send this as often as it
+        likes. It is never an error that a request already exists — the answer
+        is the state held in it.
+
+
+        The 201 answers with the ObjectId the registration covers, plus the
+        state, so a caller needs no follow-up read to learn the answer. (Two
+        deviations from the BLM document, both deliberate: it types the 201 with
+        an ObjectId alone, and this node used to answer the access RECORD's own
+        id there. The document names this field and the state read's path
+        parameter identically, and the reading where they are the same id is the
+        one a caller can act on with the ids it already has. The state read
+        still accepts a record id, so a caller holding an older answer is not
+        stranded — see plans/mils-object-access-root-scoped-plan.md.)
+
+
+        What this node answers with:
+
+
+          * 1 — granted
+          * 2 — denied
+          * 0 — pending: recorded, nothing granted. This is what an
+            ANONYMOUS request gets, because with no identity there is nobody to
+            decide about. Under MILS_INTERNAL_AUTH=node the caller resolves to a
+            registered node and the state comes from this node's own access
+            rules for that node (see docs/features/access-control.md).
+
+
+        How an object is answered: this node grants when the caller may read
+        AT LEAST ONE of the elements it holds under that object. The grant is a
+        gate rather than a blanket — the per-element rules still apply to each
+        item read — so a granted object can still answer 403 on an individual
+        ItemData under ACCESS_ENFORCEMENT=enforce. An object this node holds no
+        elements for is answered by its default policy, which is fail-closed.
+
+
+        The contract types ObjectAccessState as int64 and enumerates nothing, so
+        these values are this node's convention rather than the network's. A
+        reader should treat an unrecognised state as pending rather than as a
+        grant: reading a default as consent is how a permission model becomes
+        decoration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ObjectId:
+                  type: string
+                  pattern: '^\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}$'
+                  example: '{30699f06-146b-499a-a167-2937787f6225}'
+      responses:
+        '201':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ObjectAccessState:
+                    type: number
+                    format: int64
+                    description: >-
+                      The state this node just decided, so the handshake needs
+                      no follow-up read. Not declared by the BLM document; a
+                      caller that ignores it behaves exactly as before.
+                  ObjectId:
+                    type: string
+                    description: >-
+                      The MILS Object the registration covers — the id you
+                      asked about, not the access record's own id.
+                    pattern: '^\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}$'
+                    example: '{74ef754b-01eb-438c-91f3-52a3637339e0}'
+  /MilsObjectAccesses/{ObjectId}:
+    get:
+      tags:
+        - MilsObjectAccesses
+      summary: Returns an existing milsobjectaccess based on the ID provided.
+      description: >-
+        The state of an access request, for an id that may be either thing this
+        contract calls `ObjectId`:
+
+
+          * a MILS **Object** id — this caller's registration for that object,
+            or, when it has none, the state this node would answer a POST with
+            right now.
+          * an **access record's** own id, as an older answer of this node
+            returned it. Tried first, so a caller holding one is never
+            stranded. The response's `ObjectId` is then the object that record
+            covers, which is the id to re-read with.
+
+
+        **A well-formed id is never answered with 404.** "Nobody has asked yet"
+        is a state, not a missing resource: an unknown object answers with this
+        node's fail-closed default (2), which a conforming caller reads as
+        denied and can act on — where a 404 only tells it that its HTTP layer
+        should raise. It also means probing object ids here discloses nothing
+        about what this node holds. A malformed id is a 400.
+
+
+        Because the answer is *this caller's* access, the route follows the
+        MILS_INTERNAL_AUTH posture (see the API description). It writes nothing,
+        so checking repeatedly is free — and an operator's decision made in the
+        console shows up on the next check without a second POST.
+
+
+        See the POST for what the state values mean here, and note that 0 is
+        pending rather than granted.
+      parameters:
+        - name: ObjectId
+          in: path
+          required: true
+          description: >-
+            The MILS Object to read the access state for, or an access record's
+            own id (without accolades either way).
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ObjectAccessState:
+                    type: number
+                    format: int64
+                  ObjectId:
+                    type: string
+                    pattern: '^\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}$'
+                    example: '{3120ce83-ef84-4008-a60a-72e888193140}'

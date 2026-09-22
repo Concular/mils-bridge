@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="actors-registry-sync-title actors-registry-sync-desc">
+      <title id="actors-registry-sync-title">Actor registry sync from MILS</title>
+      <desc id="actors-registry-sync-desc">Sequence diagram showing an admin triggering a sync, the BFF paging MILS actors, fetching each actor's certificate and issuer, upserting the registration while preserving its enabled flag, and writing an audit event.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#009634"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- lifelines: 120 · 360 · 600 · 840 -->
+      <line x1="120" y1="120" x2="120" y2="520" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="360" y1="120" x2="360" y2="520" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="600" y1="120" x2="600" y2="520" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="840" y1="120" x2="840" y2="520" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- loop fragment: one MILS /Actors page -->
+      <rect x="340" y="200" width="520" height="232" rx="4" fill="rgba(0,0,0,0.02)" stroke="rgba(0,0,0,0.22)" stroke-width="1"/>
+      <rect x="340" y="200" width="40" height="16" rx="2" fill="#f7f7ff" stroke="rgba(0,0,0,0.22)" stroke-width="1"/>
+      <text x="360" y="212" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">LOOP</text>
+      <text x="352" y="232" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.04em">[each /Actors page · MaxRowCount 200 · then each actor]</text>
+
+      <!-- activation: BFF -->
+      <rect x="356" y="172" width="8" height="320" fill="rgba(0,0,0,0.06)" stroke="#666666" stroke-width="0.8"/>
+
+      <!-- M1 Console → BFF -->
+      <line x1="120" y1="168" x2="356" y2="168" stroke="#009634" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="176" y="148" width="128" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="240" y="157" fill="#009634" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST ACTOR-REGISTRY/SYNC</text>
+
+      <!-- M2 BFF → MILS list page -->
+      <line x1="364" y1="256" x2="600" y2="256" stroke="#009634" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="420" y="236" width="120" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="480" y="245" fill="#009634" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">GET /ACTORS · SKIP/MAX</text>
+
+      <!-- M3 MILS → BFF return -->
+      <line x1="600" y1="288" x2="364" y2="288" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="408" y="268" width="144" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="480" y="277" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ACTORS[] · AVAILABLEROWCOUNT</text>
+
+      <!-- M4 BFF → MILS detail -->
+      <line x1="364" y1="320" x2="600" y2="320" stroke="#009634" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <rect x="436" y="300" width="88" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="480" y="309" fill="#009634" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">GET /ACTORS/{ID}</text>
+
+      <!-- M5 MILS → BFF return -->
+      <line x1="600" y1="352" x2="364" y2="352" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="424" y="332" width="112" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="480" y="341" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">CERT · ISSUER · STATE</text>
+
+      <!-- self: parse certificate -->
+      <path d="M364,372 L400,372 L400,396 L364,396" fill="none" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="408" y="378" width="140" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="412" y="387" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">PARSE X509 · SHA256(CERT)</text>
+
+      <!-- M6 BFF → SQLite upsert (focal) -->
+      <line x1="364" y1="416" x2="840" y2="416" stroke="#2736c8" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <rect x="664" y="396" width="112" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="720" y="405" fill="#2736c8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">UPSERT · ENABLED KEPT</text>
+
+      <!-- M7 BFF → SQLite audit -->
+      <line x1="364" y1="456" x2="840" y2="456" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="648" y="436" width="144" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="720" y="445" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">AUDITEVENT ACTOR_SYNC/SYNC</text>
+
+      <!-- M8 BFF → Console return -->
+      <line x1="356" y1="488" x2="120" y2="488" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="172" y="468" width="136" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="240" y="477" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">{CREATED, UPDATED, FAILED}</text>
+
+      <!-- actors -->
+      <rect x="40" y="64" width="160" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="40" y="64" width="160" height="56" rx="6" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <rect x="48" y="72" width="28" height="12" rx="2" fill="transparent" stroke="rgba(153,153,153,0.40)" stroke-width="0.8"/>
+      <text x="62" y="81" fill="rgba(153,153,153,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">WEB</text>
+      <text x="120" y="98" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Console (admin)</text>
+      <text x="120" y="112" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/nodes · Sync registry</text>
+
+      <rect x="280" y="64" width="160" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="280" y="64" width="160" height="56" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <rect x="288" y="72" width="28" height="12" rx="2" fill="transparent" stroke="rgba(0,0,0,0.40)" stroke-width="0.8"/>
+      <text x="302" y="81" fill="rgba(0,0,0,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">BFF</text>
+      <text x="360" y="98" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">ActorRegistryService</text>
+      <text x="360" y="112" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">actor-registry/</text>
+
+      <rect x="520" y="64" width="160" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="520" y="64" width="160" height="56" rx="6" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <rect x="528" y="72" width="28" height="12" rx="2" fill="transparent" stroke="rgba(0,0,0,0.30)" stroke-width="0.8"/>
+      <text x="542" y="81" fill="rgba(0,0,0,0.60)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">EXT</text>
+      <text x="600" y="98" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">MILS</text>
+      <text x="600" y="112" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/rest/Actors · read-only</text>
+
+      <rect x="760" y="64" width="160" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="760" y="64" width="160" height="56" rx="6" fill="rgba(0,0,0,0.05)" stroke="#666666" stroke-width="1"/>
+      <rect x="768" y="72" width="40" height="12" rx="2" fill="transparent" stroke="rgba(102,102,102,0.40)" stroke-width="0.8"/>
+      <text x="788" y="81" fill="rgba(102,102,102,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SQLITE</text>
+      <text x="840" y="98" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">ActorRegistration</text>
+      <text x="840" y="112" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">+ AuditEvent</text>
+
+      <!-- legend -->
+      <line x1="40" y1="544" x2="920" y2="544" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <text x="40" y="568" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <line x1="120" y1="564" x2="148" y2="564" stroke="#009634" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="160" y="568" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">HTTP CALL</text>
+      <line x1="256" y1="564" x2="284" y2="564" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="296" y="568" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">RETURN</text>
+      <line x1="376" y1="564" x2="404" y2="564" stroke="#2736c8" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="416" y="568" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">THE WRITE (FOCAL)</text>
+      <rect x="544" y="558" width="12" height="12" rx="2" fill="rgba(0,0,0,0.02)" stroke="rgba(0,0,0,0.22)" stroke-width="1"/>
+      <text x="564" y="568" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">LOOP FRAGMENT</text>
+      <rect x="680" y="558" width="8" height="12" fill="rgba(0,0,0,0.06)" stroke="#666666" stroke-width="0.8"/>
+      <text x="696" y="568" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">ACTIVATION</text>
+    </svg>

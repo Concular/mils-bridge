@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mils-internal-item-read-title mils-internal-item-read-desc">
+      <title id="mils-internal-item-read-title">mils-internal — an ItemData read, attributed but not decided</title>
+      <desc id="mils-internal-item-read-desc">Sequence diagram of a node reading GET /api/mils-internal/MilsItems/{id}/ItemData without credentials: the metrics middleware classifies the caller, ElementRefGuard resolves the mapping for that MILS id and annotates it, the controller returns the stored payload as text/plain, and the middleware writes one RequestMetric row carrying the element but no access decision.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- lifelines: node 112, middleware 312, guard 512, controller 696, store 872 -->
+      <line x1="112" y1="104" x2="112" y2="420" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="312" y1="104" x2="312" y2="420" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="512" y1="104" x2="512" y2="420" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="696" y1="104" x2="696" y2="420" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="872" y1="104" x2="872" y2="420" stroke="rgba(0,0,0,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- activation: middleware spans the whole request -->
+      <rect x="308" y="128" width="8" height="272" fill="rgba(0,0,0,0.06)" stroke="#666666" stroke-width="0.8"/>
+
+      <!-- ── messages ────────────────────────────────────────────────── -->
+      <!-- 1 node → middleware -->
+      <line x1="116" y1="132" x2="304" y2="132" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="140" y="112" width="140" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="210" y="121" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">GET …/ITEMDATA · NO AUTH</text>
+
+      <!-- 2 middleware self: classify caller -->
+      <path d="M316,160 H340 Q348,160 348,168 V176 Q348,184 340,184 H320" fill="none" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="360" y="164" width="140" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="364" y="173" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">CALLER = EXTERNAL</text>
+
+      <!-- 3 middleware → guard -->
+      <line x1="316" y1="212" x2="504" y2="212" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="376" y="192" width="72" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="412" y="201" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ROUTE</text>
+
+      <!-- 4 guard → store: mapping by milsId -->
+      <line x1="516" y1="240" x2="864" y2="240" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="628" y="220" width="124" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="690" y="229" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MAPPING BY MILSID</text>
+
+      <!-- 5 guard self: annotate mappingId (accent — the point of the guard) -->
+      <path d="M516,264 H540 Q548,264 548,272 V280 Q548,288 540,288 H520" fill="none" stroke="#2736c8" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <rect x="560" y="268" width="128" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="564" y="277" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ANNOTATE · ALWAYS TRUE</text>
+
+      <!-- 6 guard → controller: allow -->
+      <line x1="516" y1="312" x2="688" y2="312" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="576" y="292" width="52" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="602" y="301" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ALLOW</text>
+
+      <!-- 7 controller → store: payload -->
+      <line x1="700" y1="336" x2="864" y2="336" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="732" y="340" width="100" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="782" y="349" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">MILSITEMPAYLOAD</text>
+
+      <!-- 8 controller → node: 200 text/plain (return, long) -->
+      <line x1="692" y1="372" x2="120" y2="372" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <rect x="152" y="352" width="116" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="210" y="361" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">200 TEXT/PLAIN</text>
+
+      <!-- 9 middleware → store: RequestMetric -->
+      <line x1="316" y1="400" x2="864" y2="400" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="480" y="380" width="224" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="592" y="389" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">METRIC: MAPPINGID SET · DECISION NULL</text>
+
+      <!-- ── actors ──────────────────────────────────────────────────── -->
+      <rect x="48" y="48" width="128" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="48" y="48" width="128" height="56" rx="6" fill="rgba(102,102,102,0.10)" stroke="#999999" stroke-width="1"/>
+      <text x="112" y="74" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Node</text>
+      <text x="112" y="90" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">any HTTP client</text>
+
+      <rect x="232" y="48" width="160" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="232" y="48" width="160" height="56" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="312" y="74" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Metrics middleware</text>
+      <text x="312" y="90" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">metrics/</text>
+
+      <rect x="432" y="48" width="160" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="432" y="48" width="160" height="56" rx="6" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1.2"/>
+      <text x="512" y="74" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">ElementRefGuard</text>
+      <text x="512" y="90" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">access/ · no decision</text>
+
+      <rect x="624" y="48" width="144" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="624" y="48" width="144" height="56" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="696" y="74" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Controller</text>
+      <text x="696" y="90" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">mils-internal/</text>
+
+      <rect x="816" y="48" width="112" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="816" y="48" width="112" height="56" rx="6" fill="rgba(0,0,0,0.05)" stroke="#666666" stroke-width="1"/>
+      <text x="872" y="74" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Store</text>
+      <text x="872" y="90" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">SQLite</text>
+
+      <!-- ── legend strip ────────────────────────────────────────────── -->
+      <line x1="40" y1="452" x2="920" y2="452" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <text x="40" y="476" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
+      <line x1="120" y1="472" x2="148" y2="472" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="160" y="477" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">CALL / DB READ-WRITE</text>
+      <line x1="320" y1="472" x2="348" y2="472" stroke="#666666" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="360" y="477" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">RETURN</text>
+      <line x1="440" y1="472" x2="468" y2="472" stroke="#2736c8" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <text x="480" y="477" fill="#666666" font-size="8" font-family="'Geist Mono', monospace">ATTRIBUTION — THE ONLY THING THE GUARD DOES</text>
+    </svg>

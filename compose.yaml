@@ -1,0 +1,59 @@
+# The MILS Bridge: one container serving the BFF, the console and the peer API.
+#
+#   cp .env.example .env    # edit MILS_ACTOR_CODE_SELF and MILS_BASE_URL
+#   docker compose up -d
+#
+# With the `tls` profile, Caddy terminates HTTPS for BRIDGE_DOMAIN in front of
+# it: `docker compose --profile tls up -d`. See docs/deployment.md.
+services:
+  bridge:
+    image: ghcr.io/concular/mils-bridge:${BRIDGE_VERSION:-latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # The origin the BROWSER uses. It is the CORS allow-list and what the
+      # console's own requests are recognised by, so it has to be the public
+      # URL, not the container's port. Behind the tls profile that is
+      # https://${BRIDGE_DOMAIN}.
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:8080}
+      # Derived from WEB_ORIGIN so a deployment that sets one does not have to
+      # remember the other. Whatever is here must also be registered on the
+      # Google OAuth client, or the connect flow fails at the redirect.
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-${WEB_ORIGIN:-http://localhost:8080}/api/integration/google-drive/oauth/callback}
+    ports:
+      # Loopback by default: nothing is exposed to the network until you say
+      # so. Under the tls profile, delete this — Caddy reaches the container
+      # over the compose network and publishing 8080 as well would leave a
+      # plaintext way in past it.
+      - '${BRIDGE_BIND:-127.0.0.1}:${BRIDGE_PORT:-8080}:8080'
+    volumes:
+      # The SQLite mapping store AND the registered files. This is the whole
+      # state of the node: back it up before an upgrade. A named volume takes
+      # the image's ownership on creation; a bind mount does not, so a host
+      # directory needs `chown 1000:1000` first (the image runs as uid 1000).
+      - bridge-data:/data
+
+  caddy:
+    image: caddy:2
+    profiles: [tls]
+    restart: unless-stopped
+    environment:
+      # Not `${BRIDGE_DOMAIN:?…}`: compose interpolates the whole file whatever
+      # profile you asked for, so a required variable here would abort the
+      # quickstart too. Unset means Caddy serves https://localhost with its own
+      # local CA — a usable answer, and an obvious one to notice.
+      BRIDGE_DOMAIN: ${BRIDGE_DOMAIN:-localhost}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - bridge
+
+volumes:
+  bridge-data:
+  caddy-data:
+  caddy-config:

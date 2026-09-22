@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="access-enforcement-modes-title access-enforcement-modes-desc">
+      <title id="access-enforcement-modes-title">ElementAccessGuard — what ACCESS_ENFORCEMENT changes</title>
+      <desc id="access-enforcement-modes-desc">Flowchart of the guard on an actor's element read: mode off skips everything; a console session passes without a decision; otherwise the element is resolved and a decision computed and annotated for the metrics row; ALLOW passes; a BLOCK passes in shadow mode with a rate-limited warning and answers 403 only in enforce mode.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- main column x=280; pass column x=760 -->
+      <!-- ── arrows ──────────────────────────────────────────────────── -->
+      <!-- start → D1 -->
+      <line x1="280" y1="72" x2="280" y2="104" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <!-- D1 yes (off) → pass -->
+      <line x1="376" y1="140" x2="680" y2="140" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="480" y="120" width="96" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="528" y="129" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">OFF · NOTHING RUNS</text>
+      <!-- D1 no → D2 -->
+      <line x1="280" y1="176" x2="280" y2="200" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- D2 yes (session) → pass -->
+      <line x1="376" y1="236" x2="680" y2="236" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="464" y="216" width="128" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="528" y="225" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SESSION · NO DECISION</text>
+      <!-- D2 no → step -->
+      <line x1="280" y1="272" x2="280" y2="296" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="292" y="276" width="88" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="296" y="285" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">ACTOR JWT</text>
+
+      <!-- step → D3 -->
+      <line x1="280" y1="352" x2="280" y2="376" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- D3 ALLOW → pass -->
+      <line x1="376" y1="412" x2="680" y2="412" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="500" y="392" width="56" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="528" y="401" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ALLOW</text>
+      <!-- D3 BLOCK → D4 -->
+      <line x1="280" y1="448" x2="280" y2="472" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="292" y="452" width="48" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="296" y="461" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.06em">BLOCK</text>
+
+      <!-- D4 shadow → pass (right then up into pass box bottom) -->
+      <path d="M376,508 H752 Q760,508 760,500 V468" fill="none" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="452" y="488" width="152" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="528" y="497" fill="#999999" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SHADOW · WARN 1/H</text>
+
+      <!-- D4 enforce → 403 (left) -->
+      <line x1="184" y1="508" x2="128" y2="508" stroke="#2736c8" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+
+      <!-- ── shapes ──────────────────────────────────────────────────── -->
+      <!-- start -->
+      <rect x="176" y="40" width="208" height="32" rx="16" fill="#f7f7ff"/>
+      <rect x="176" y="40" width="208" height="32" rx="16" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="60" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Element read arrives</text>
+
+      <!-- D1 mode off? -->
+      <polygon points="280,104 376,140 280,176 184,140" fill="#f7f7ff"/>
+      <polygon points="280,104 376,140 280,176 184,140" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="136" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Mode = off?</text>
+      <text x="280" y="152" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ACCESS_ENFORCEMENT</text>
+
+      <!-- D2 console session? -->
+      <polygon points="280,200 376,236 280,272 184,236" fill="#f7f7ff"/>
+      <polygon points="280,200 376,236 280,272 184,236" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="232" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Console session?</text>
+      <text x="280" y="248" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">request.user</text>
+
+      <!-- step: resolve + decide + annotate -->
+      <rect x="168" y="296" width="224" height="56" rx="6" fill="#f7f7ff"/>
+      <rect x="168" y="296" width="224" height="56" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="320" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Resolve element · decide</text>
+      <text x="280" y="338" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">annotate mappingId + decision</text>
+
+      <!-- D3 decision? -->
+      <polygon points="280,376 376,412 280,448 184,412" fill="#f7f7ff"/>
+      <polygon points="280,376 376,412 280,448 184,412" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="408" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Decision?</text>
+      <text x="280" y="424" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">resolveAccess</text>
+
+      <!-- D4 enforce? -->
+      <polygon points="280,472 376,508 280,544 184,508" fill="#f7f7ff"/>
+      <polygon points="280,472 376,508 280,544 184,508" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="280" y="504" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Mode = enforce?</text>
+      <text x="280" y="520" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">default: shadow</text>
+
+      <!-- 403 (focal) -->
+      <rect x="40" y="484" width="88" height="48" rx="6" fill="#f7f7ff"/>
+      <rect x="40" y="484" width="88" height="48" rx="6" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1.2"/>
+      <text x="84" y="506" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">403</text>
+      <text x="84" y="522" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">blocked</text>
+
+      <!-- pass (tall) -->
+      <rect x="680" y="104" width="160" height="364" rx="6" fill="#f7f7ff"/>
+      <rect x="680" y="104" width="160" height="364" rx="6" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="760" y="280" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Request proceeds</text>
+      <text x="760" y="298" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">metrics row records</text>
+      <text x="760" y="312" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">decision when computed</text>
+    </svg>

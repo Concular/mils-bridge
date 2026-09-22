@@ -1,0 +1,46 @@
+name: Bug report
+description: Something the bridge does that it should not
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do **not** report a suspected security problem here — mail the
+        Concular team instead. See the Support section of the README.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: 'The output of `curl -s localhost:8080/api/version`, and the image tag you run.'
+      placeholder: '0.1.0 / BRIDGE_VERSION=latest'
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you got instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: >-
+        `docker compose logs --no-color bridge` around the failure. For anything
+        involving another node, run with `LOG_LEVEL=debug` first — it adds the
+        redacted peer request and response headers. Tokens never appear in a
+        log line, but do check for host names you would rather not publish.
+      render: shell
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant configuration
+      description: >-
+        The settings that bear on it — `ACCESS_ENFORCEMENT`,
+        `MILS_INTERNAL_AUTH`, `PEER_FEDERATION`, whether you are behind a
+        reverse proxy. **Never paste a key, a token or your `.env`.**
