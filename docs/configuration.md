@@ -172,7 +172,7 @@ it can become the one state that must never read as a grant.)
 
 | Variable          | Default | Overridable from Settings | Read by                      | Notes                                                                                                                                                                                              |
 | ----------------- | ------- | ------------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `SECRETS_KEY`     | unset   | no                        | `common/secret-box.ts`       | 32 bytes, base64 or hex (`openssl rand -base64 32`). Encrypts the credential columns with AES-256-GCM. Unset keeps them stored as typed. Boot **fails** if encrypted rows exist and this is unset. |
+| `SECRETS_KEY`     | unset   | no                        | `common/secret-box.ts`       | 32 bytes, base64 or hex - `openssl rand -base64 32`, or `node -e "console.log(require('node:crypto').randomBytes(32).toString('base64'))"` (more ways in `.env.example`). Encrypts the credential columns with AES-256-GCM. Unset keeps them stored as typed. Boot **fails** if encrypted rows exist and this is unset. |
 | `SECRETS_KEY_OLD` | unset   | no                        | `scripts/encrypt-secrets.ts` | Only for `encrypt:secrets --rotate`: the key the rows were written with.                                                                                                                           |
 
 ### Rate limiting
