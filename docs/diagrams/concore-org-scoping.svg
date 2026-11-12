@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="concore-org-scoping-title concore-org-scoping-desc">
+      <title id="concore-org-scoping-title">Concore organisation scoping</title>
+      <desc id="concore-org-scoping-desc">Flowchart showing when the Concore pass-through injects organisation_id into a forwarded request: only for a GET on an allow-listed list route, only when an organisation id is configured, and only when the caller did not send the parameter itself.</desc>
+      <defs>
+<style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=Inter:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap');</style>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#666666"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2736c8"/></marker>
+      </defs>
+      <rect width="100%" height="100%" fill="#f7f7ff"/>
+
+      <!-- arrows -->
+      <line x1="400" y1="80" x2="400" y2="104" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="508" y1="152" x2="640" y2="152" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="400" y1="200" x2="400" y2="232" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="508" y1="280" x2="640" y2="280" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="400" y1="328" x2="400" y2="360" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="508" y1="408" x2="640" y2="408" stroke="#666666" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="400" y1="456" x2="400" y2="480" stroke="#2736c8" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+      <!-- arrow labels -->
+      <rect x="556" y="132" width="24" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="568" y="141" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+      <rect x="412" y="210" width="32" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="428" y="219" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">YES</text>
+      <rect x="556" y="260" width="24" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="568" y="269" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+      <rect x="412" y="338" width="32" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="428" y="347" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">YES</text>
+      <rect x="556" y="388" width="32" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="572" y="397" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">YES</text>
+      <rect x="412" y="462" width="24" height="12" rx="2" fill="#f7f7ff"/>
+      <text x="424" y="471" fill="#2736c8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+
+      <!-- start -->
+      <rect x="320" y="32" width="160" height="48" rx="24" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <text x="400" y="52" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Inbound request</text>
+      <text x="400" y="68" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/api/concore/*</text>
+
+      <!-- decisions -->
+      <polygon points="400,104 508,152 400,200 292,152" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="400" y="148" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Organisation id</text>
+      <text x="400" y="164" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">configured?</text>
+
+      <polygon points="400,232 508,280 400,328 292,280" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="400" y="276" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">GET on an</text>
+      <text x="400" y="292" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">allow-listed path?</text>
+
+      <polygon points="400,360 508,408 400,456 292,408" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="400" y="404" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Caller already sent</text>
+      <text x="400" y="420" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">organisation_id?</text>
+
+      <!-- verbatim outcome: one box, three attach points -->
+      <rect x="640" y="128" width="224" height="304" rx="24" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <text x="752" y="276" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Forward verbatim</text>
+      <text x="752" y="292" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">URL byte-for-byte · caller wins</text>
+
+      <!-- inject outcome (focal) -->
+      <rect x="304" y="480" width="192" height="48" rx="24" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1.2"/>
+      <text x="400" y="500" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Inject organisation_id</text>
+      <text x="400" y="516" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">query re-serialised · a default, not a boundary</text>
+
+      <!-- legend -->
+      <line x1="40" y1="544" x2="920" y2="544" stroke="rgba(0,0,0,0.10)" stroke-width="0.8"/>
+      <text x="40" y="560" fill="#666666" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND · SHAPE CARRIES TYPE</text>
+      <rect x="40" y="572" width="24" height="12" rx="6" fill="rgba(0,0,0,0.03)" stroke="rgba(0,0,0,0.30)" stroke-width="1"/>
+      <text x="72" y="582" fill="#666666" font-size="8" font-family="'Inter', sans-serif">Start / outcome</text>
+      <polygon points="220,578 232,572 244,578 232,584" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+      <text x="256" y="582" fill="#666666" font-size="8" font-family="'Inter', sans-serif">Decision (applyOrgScope)</text>
+      <rect x="420" y="572" width="24" height="12" rx="6" fill="rgba(39,54,200,0.08)" stroke="#2736c8" stroke-width="1"/>
+      <text x="452" y="582" fill="#666666" font-size="8" font-family="'Inter', sans-serif">The one amendment to verbatim forwarding</text>
+    </svg>

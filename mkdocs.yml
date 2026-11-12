@@ -68,6 +68,12 @@ nav:
       - Security: security.md
       - Runbooks: runbooks.md
       - Troubleshooting: troubleshooting.md
+  - Integrations:
+      - MILS (the target): mils.md
+      - Concore: concore.md
+      - Google Drive: google-drive.md
+      - API Explorer: api-explorer.md
+      - Local elements: local-elements.md
   - Access and peers:
       - Access control: access-control.md
       - Actors and nodes: actors-and-nodes.md

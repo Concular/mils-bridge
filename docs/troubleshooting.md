@@ -102,4 +102,5 @@ record: _Access → Nodes_ → the node's **Diagnostics**, the probe result's
 
 - [`runbooks.md`](runbooks.md) — the scripts referenced above.
 - [`configuration.md`](configuration.md) — the limits and defaults.
+- [`google-drive.md`](google-drive.md), [`api-explorer.md`](api-explorer.md) — the mechanisms behind the Drive and Explorer rows.
 - [`access-control.md`](access-control.md) — how a decision is reached.
