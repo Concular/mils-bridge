@@ -409,6 +409,7 @@ it is a `404`.
 
 - [`access-control.md`](access-control.md) — the enforced counterpart on `/api/integration/*`, and the resolver that now also answers inbound access requests.
 - [`actors-and-nodes.md`](actors-and-nodes.md) — federated reads: the whole caller side, the switches that gate it, and why a read cannot loop.
+- [`google-drive.md`](google-drive.md) — the file store behind `ItemFile`.
   `expose-mils-internal-api-plan.md`,
   `mils-internal-local-implementation-plan.md`,
   `mils-internal-statistics-plan.md`.

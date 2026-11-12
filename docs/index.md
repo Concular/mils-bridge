@@ -19,6 +19,7 @@ when another node asks.
 | -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Understand what the bridge does and why      | [What this is](what-this-is.md) · [Glossary](glossary.md)                                                |
 | Run a node                                   | [Deployment](deployment.md) · [Configuration](configuration.md)                                          |
+| Connect MILS and the sources you register from | [MILS](mils.md) · [Concore](concore.md) · [Google Drive](google-drive.md) · [API Explorer](api-explorer.md) · [Local elements](local-elements.md) |
 | Decide who may read what                     | [Access control](access-control.md) · [Security](security.md)                                            |
 | Connect another node, or connect to one      | [Peer node quickstart](peer-node-quickstart.md) · [Peer node onboarding](peer-node-onboarding.md)        |
 | Implement the contract peers call            | [The `/rest` API](mils-internal-api.md) · [OpenAPI contract](api-reference.md)                           |
