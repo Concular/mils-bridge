@@ -1,0 +1,5 @@
+# The documentation site's toolchain, pinned so a release of either cannot
+# change what CI publishes without a commit here.
+mkdocs==1.6.1
+mkdocs-material==9.8.1
+pymdown-extensions==13.1
