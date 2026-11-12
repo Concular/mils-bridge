@@ -36,6 +36,15 @@ All under `/api/integration/api-explorer`, guard `session` (`AuthGuard`,
 API; the mappings it creates are visible through the public `/mappings` routes
 like any other.
 
+**Who may do what.** Every console user can _use_ an API: browse it, send
+requests through its proxy with the stored credential, read the request log and
+register an exchange. _Reconfiguring_ it — `PATCH`, `DELETE`, `reimport`,
+clearing the log — is for the user who imported it or an `ADMIN` (`403`
+otherwise; an API whose creator was deleted is an `ADMIN`'s). One exchange can
+also be deleted by the user who sent it. The DTO's `canManage` says which case
+the reader is in, and the settings page greys out when it is `false`. The rule is
+`apps/api/src/api-explorer/api-ownership.ts`.
+
 | Method               | Path                                                                                                   | Purpose                                                                                                                                                               |
 | -------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | POST                 | `imports/preview` `{ import }`                                                                         | Resolve + parse without storing: title, versions, operation count, servers, suggested base URL, security schemes, warnings                                            |

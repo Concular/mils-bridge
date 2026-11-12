@@ -2,7 +2,7 @@
 
 # What this is
 
-**MILS Node** is the integration component between **MILS**, a metadata tracker,
+**MILS Bridge** is the integration component between **MILS**, a metadata tracker,
 and the systems whose data gets registered into it — Concore first, then Google
 Drive files and any user-imported HTTP API. A NestJS backend-for-frontend owns
 every upstream credential and the durable cross-reference between source ids and

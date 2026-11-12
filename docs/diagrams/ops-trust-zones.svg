@@ -93,7 +93,7 @@
       <rect x="384" y="260" width="40" height="12" rx="2" fill="transparent" stroke="rgba(39,54,200,0.40)" stroke-width="0.8"/>
       <text x="404" y="269" fill="rgba(39,54,200,0.80)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SQLITE</text>
       <text x="480" y="292" fill="#000000" font-size="12" font-weight="600" font-family="'Inter', sans-serif" text-anchor="middle">Settings · sessions · tokens</text>
-      <text x="480" y="308" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">secrets stored plaintext</text>
+      <text x="480" y="308" fill="#666666" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">secrets sealed (SECRETS_KEY)</text>
 
       <rect x="376" y="380" width="208" height="64" rx="6" fill="#f7f7ff"/>
       <rect x="376" y="380" width="208" height="64" rx="6" fill="rgba(0,0,0,0.05)" stroke="#666666" stroke-width="1"/>

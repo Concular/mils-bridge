@@ -74,6 +74,12 @@ nav:
       - Google Drive: google-drive.md
       - API Explorer: api-explorer.md
       - Local elements: local-elements.md
+      - Bulk import: bulk-import.md
+      - Amazon S3: s3.md
+      - SQL databases: sql.md
+      - Inbound push: push.md
+      - Notion: notion.md
+      - Microsoft 365: microsoft-365.md
   - Access and peers:
       - Access control: access-control.md
       - Actors and nodes: actors-and-nodes.md
