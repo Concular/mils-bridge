@@ -11,6 +11,9 @@ It is for an organisation that runs a MILS node: you decide what gets
 registered, which peers may read which elements, and what your node answers
 when another node asks.
 
+**Documentation: <https://concular.github.io/mils-bridge/>** — the pages
+under `docs/` and the peer contract in `spec/`, as a searchable site.
+
 Full picture: [`docs/what-this-is.md`](docs/what-this-is.md) ·
 [`docs/glossary.md`](docs/glossary.md).
 

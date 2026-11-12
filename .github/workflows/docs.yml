@@ -1,0 +1,71 @@
+# Build the documentation site from docs/ + spec/ and publish it to GitHub
+# Pages: https://concular.github.io/mils-bridge/
+#
+# A pull request only builds (strict: a broken link or anchor fails it); a push
+# to main also deploys. Pages must be set to "GitHub Actions" as its source
+# (Settings → Pages) once.
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'spec/**'
+      - 'docs-site/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'spec/**'
+      - 'docs-site/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time; a newer push supersedes a queued one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: docs-site/requirements.txt
+
+      - run: pip install -r docs-site/requirements.txt
+
+      - name: Build (strict)
+        run: mkdocs build --strict
+        env:
+          NO_MKDOCS_2_WARNING: '1'
+
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
