@@ -8,7 +8,7 @@ working.
 
 ## Unreleased
 
-## 0.2.0 — RELEASE-DATE
+## 0.2.0 — 2026-11-13
 
 Six new sources, a redesigned console with a built-in user guide, and a
 PropertyData answer peers can use. Run `docker compose pull && docker compose
