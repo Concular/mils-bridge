@@ -8,6 +8,34 @@ working.
 
 ## Unreleased
 
+## 0.3.0 — 2026-11-13
+
+A clearer Integrations page. Run `docker compose pull && docker compose up -d`;
+there are no migrations and no configuration changes.
+
+### Changed
+
+- **Integrations is one table** instead of a grid of cards. MILS, the target
+  every source depends on, sits in a strip above it. Each source is one row:
+  its status and the reason for it, the setting that matters most, how many
+  elements it registered and how many failed, and when it was last checked.
+  Test and Configure are on the row. Filter by status (Needs attention, Not
+  tested, Connected, Not set up) or by name, sort by severity, and expand a row
+  for every fact and the last test's message. **Test all** re-checks everything
+  that is configured, three at a time. On a narrow screen the table becomes a
+  list.
+
+### Fixed
+
+- Filtering the Elements list by integration (`?integration=`) could answer
+  `500`: an import cycle left the integration registry without its source
+  kinds.
+
+### Running it
+
+- The `linux/arm64` image is now built on a native arm64 runner instead of under
+  emulation. The image is the same; releases just publish much sooner.
+
 ## 0.2.0 — 2026-11-13
 
 Six new sources, a redesigned console with a built-in user guide, and a
