@@ -20,6 +20,8 @@ services:
       # remember the other. Whatever is here must also be registered on the
       # Google OAuth client, or the connect flow fails at the redirect.
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-${WEB_ORIGIN:-http://localhost:8080}/api/integration/google-drive/oauth/callback}
+      # The same for Microsoft 365: register it on the Entra app verbatim.
+      M365_REDIRECT_URI: ${M365_REDIRECT_URI:-${WEB_ORIGIN:-http://localhost:8080}/api/integration/microsoft-365/oauth/callback}
     ports:
       # Loopback by default: nothing is exposed to the network until you say
       # so. Under the tls profile, delete this — Caddy reaches the container

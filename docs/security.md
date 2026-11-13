@@ -225,11 +225,11 @@ minted **for us** (one of our own names, `<our code>-rest-api` or
 against a certificate MILS publishes (never anything in the token) and the
 pinned `iss` decide _who_; these decide _for how long_:
 
-| Bound                       | How far it goes                                                                                                    |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `ACTOR_JWT_MAX_TTL_SECONDS` | Rejects a token whose `exp − iat` exceeds it. Default `0` (uncapped) — **the only lever that shortens the window** |
-| Certificate expiry          | `certNotAfter` in the past is refused even with a valid signature                                                  |
-| The two `enabled` switches  | Per actor and per node, effective immediately, and the only revocation there is                                    |
+| Bound                       | How far it goes                                                                                                                      |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `ACTOR_JWT_MAX_TTL_SECONDS` | Rejects a token whose `exp − iat` (`exp − now` without `iat`) exceeds it. Default 24 h — **the only lever that shortens the window** |
+| Certificate expiry          | `certNotAfter` in the past is refused even with a valid signature                                                                    |
+| The two `enabled` switches  | Per actor and per node, effective immediately, and the only revocation there is                                                      |
 
 And what a caller may _read_ once authenticated is decided by the access model,
 the `MilsObjectAccesses` handshake and `MILS_INTERNAL_AUTH` — not by a claim.
@@ -380,8 +380,8 @@ write, settings change, actor toggle and mapping archive/reactivate leaves an
 
 A node's JWT is verified against the certificate MILS publishes for that actor
 (`apps/api/src/actor-registry/actor-token-verifier.service.ts`), with
-`ACTOR_JWT_CLOCK_TOLERANCE_SECONDS` of skew and an optional lifetime cap
-`ACTOR_JWT_MAX_TTL_SECONDS`. Synced actors start **disabled**; an operator must
+`ACTOR_JWT_CLOCK_TOLERANCE_SECONDS` of skew and a lifetime cap
+`ACTOR_JWT_MAX_TTL_SECONDS` (24 h by default). Synced actors start **disabled**; an operator must
 enable each one. Access decisions on top of that are described in
 [`access-control.md`](access-control.md).
 

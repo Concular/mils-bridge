@@ -20,15 +20,15 @@ description says which local store answers it. The console's
 
 ## Endpoints
 
-| Method | Path                                     | Guard    | Backing table       | Answers                                                                                                                                                                                                                                                |
-| ------ | ---------------------------------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `GET`  | `/rest/MilsItems/:objectId/ItemData`     | `none`   | `MilsItemPayload`   | The stored payload **verbatim** as `text/plain; charset=utf-8`; `404` when no payload is stored for that item                                                                                                                                          |
-| `GET`  | `/rest/MilsItems/:objectId/BinaryData`   | `none`   | `StoredFile` + disk | The same bytes **base64-encoded** as `text/plain; charset=utf-8` — the BLM contract types this response as a plain string; same `ETag`, `If-None-Match`, `404` and `410` as `ItemFile`                                                                 |
-| `GET`  | `/rest/MilsItems/:objectId/ItemFile`     | `none`   | `StoredFile` + disk | The bytes of the file registered as this item, with its stored `Content-Type`, `ETag` (quoted sha256) and `Content-Disposition`; honours `If-None-Match`; `404` when no stored file, **`410 Gone`** when the blob is missing on disk                   |
-| `GET`  | `/rest/MilsItems/:objectId/PropertyData` | `none`   | `MilsItemPayload`   | The stored property data **verbatim** as `text/plain; charset=utf-8`; `404` when none is stored. Opaque text — the contract types the 200 as a plain string, and this node does not validate it against the item type's property schema                |
-| `GET`  | `/rest/MilsItems`                        | `none`\* | `ResourceMapping`   | `{ AvailableRowCount, MilsItems: [{ ItemId, ObjectId, ItemDescription }] }` for one `ObjectId` **and** one `ItemTypeId`, both required; optional `FilterText`, `SkipRowCount`, `MaxRowCount` (default 50, max 200). \*No `ElementRefGuard` — see below |
-| `POST` | `/rest/MilsObjectAccesses`               | posture  | `MilsObjectAccess`  | `201 { ObjectId, ObjectAccessState }` — the braced **object** id the registration covers, and this node's **own access decision** for it (below). Idempotent: one row per (caller, object), re-decided and re-counted on every ask                     |
-| `GET`  | `/rest/MilsObjectAccesses/:objectId`     | posture  | `MilsObjectAccess`  | `{ ObjectAccessState, ObjectId }` for a MILS **Object** id **or** an access record's own id; **never `404`** for a well-formed id — with no row it answers the decision a POST would have. `400` for a malformed one                                   |
+| Method | Path                                     | Guard    | Backing table       | Answers                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ------ | ---------------------------------------- | -------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET`  | `/rest/MilsItems/:objectId/ItemData`     | `none`   | `MilsItemPayload`   | The stored payload **verbatim** as `application/json; charset=utf-8` (the original BLM document said `text/plain`; the bytes are the same); `404` when no payload is stored for that item                                                                                                                                                                                                                                              |
+| `GET`  | `/rest/MilsItems/:objectId/BinaryData`   | `none`   | `StoredFile` + disk | The same bytes **base64-encoded** as `text/plain; charset=utf-8` — the BLM contract types this response as a plain string; same `ETag`, `If-None-Match`, `404` and `410` as `ItemFile`                                                                                                                                                                                                                                                 |
+| `GET`  | `/rest/MilsItems/:objectId/ItemFile`     | `none`   | `StoredFile` + disk | The bytes of the file registered as this item, with its stored `Content-Type`, `ETag` (quoted sha256) and `Content-Disposition`; honours `If-None-Match`; `404` when no stored file, **`410 Gone`** when the blob is missing on disk                                                                                                                                                                                                   |
+| `GET`  | `/rest/MilsItems/:objectId/PropertyData` | `none`   | `MilsItemPayload`   | `{ MilsId, MilsItemDataMediaType, MilsBinaryDataMediaType, MilsItemProperties: [{ PropertyCode, PropertyValue? }] }` as `application/json` — every property type MILS lists for the item's type, and the media type each payload read answers with (`null` when it has nothing). **Always `200`** for an item this node holds; `404` only for an id it holds nothing for. See [PropertyData](#propertydata-properties-and-media-types) |
+| `GET`  | `/rest/MilsItems`                        | `none`\* | `ResourceMapping`   | `{ AvailableRowCount, MilsItems: [{ ItemId, ObjectId, ItemDescription }] }` for one `ObjectId` **and** one `ItemTypeId`, both required; optional `FilterText`, `SkipRowCount`, `MaxRowCount` (default 50, max 200). \*No `ElementRefGuard` — see below                                                                                                                                                                                 |
+| `POST` | `/rest/MilsObjectAccesses`               | posture  | `MilsObjectAccess`  | `201 { ObjectId, ObjectAccessState }` — the braced **object** id the registration covers, and this node's **own access decision** for it (below). Idempotent: one row per (caller, object), re-decided and re-counted on every ask                                                                                                                                                                                                     |
+| `GET`  | `/rest/MilsObjectAccesses/:objectId`     | posture  | `MilsObjectAccess`  | `{ ObjectAccessState, ObjectId }` for a MILS **Object** id **or** an access record's own id; **never `404`** for a well-formed id — with no row it answers the decision a POST would have. `400` for a malformed one                                                                                                                                                                                                                   |
 
 The **Guard** column is the default `open` posture: `none` means no credential
 is checked there, and `posture` means the route always follows
@@ -39,9 +39,8 @@ table under [§ Why it is unauthenticated](#why-it-is-unauthenticated--and-how-t
 The usual MILS brace rule applies: path parameters are bare uuids, body GUIDs
 are braced (`toBracedMilsId` / `normalizeMilsId` in
 `apps/api/src/common/mils-ids.ts`; the POST body is validated against a braced
-GUID regex in `mils-internal.schemas.ts`). `ItemData` and `PropertyData` set the
-content type explicitly because Express would otherwise send a string body as
-`text/html`. Note the path parameter on all four item reads is named `ObjectId`
+GUID regex in `mils-internal.schemas.ts`). `ItemData` sets its content type
+explicitly because Express would otherwise send a string body as `text/html`. Note the path parameter on all four item reads is named `ObjectId`
 and is in fact an **ItemId** — a naming wart of the BLM document, kept so the
 paths match it verbatim.
 
@@ -385,7 +384,7 @@ second access model.
 | `RegistrationService` (Concore)                                                                   | On `REGISTERED`, keyed by the new `ItemId`                 | Upserts the Concore snapshot if it is a JSON object; best-effort — a store failure never fails the registration, the `SUCCESS` log records `payloadStored`   |
 | `DriveRegistrationService`                                                                        | On `REGISTERED`, and again on re-sync                      | Upserts the `StoredFileDto` descriptor (name, mime, size, sha256, links) — `ItemFile` serves the bytes it describes; best-effort                             |
 | `ExchangeRegistrationService`                                                                     | On `REGISTERED`                                            | Upserts the exchange payload; its size against `ITEM_PAYLOAD_MAX_BYTES` is checked **before** the MILS item is created                                       |
-| `PUT /api/integration/item-payloads/:milsId` (`apps/api/src/item-payload/`)                       | Manually, from the console                                 | Any JSON object ≤ 64 KiB, optional provenance columns, and the **only** writer of `propertyData`; `400` above the cap                                        |
+| `PUT /api/integration/item-payloads/:milsId` (`apps/api/src/item-payload/`)                       | Manually, from the console                                 | Any JSON object ≤ 64 KiB, optional provenance columns, and the **only** writer of `propertyData` (property overrides); `400` above the cap                   |
 | `pnpm --filter @bridge/api backfill:item-payloads` (`apps/api/scripts/backfill-item-payloads.ts`) | For mappings registered before registration wrote payloads | Creates rows from `ResourceMapping.concoreSnapshot`; **never overwrites** an existing row; skips non-object, oversized or invalid snapshots and reports them |
 
 **`propertyData` is the one column an omitted field does not blank.** The write
@@ -405,11 +404,63 @@ Both readers — the guarded `GET /api/integration/item-payloads/:milsId`
 is gone, `410` tells the node to have the file re-synced rather than pretending
 it is a `404`.
 
+## PropertyData: properties and media types
+
+`GET /rest/MilsItems/{id}/PropertyData` is what a peer reads **first**: it says
+what the item is and which of the other reads can answer. The shape is the one
+Block Materials serves and asked every node to serve
+(`mils-internal-property-data-structure-plan.md`):
+
+```json
+{
+  "MilsId": "{3dae906b-2f11-4f3d-90b2-a02ccb4906f8}",
+  "MilsItemDataMediaType": "application/json",
+  "MilsBinaryDataMediaType": null,
+  "MilsItemProperties": [
+    { "PropertyCode": "ItemCode", "PropertyValue": "0000775199" },
+    { "PropertyCode": "ItemHeight" }
+  ]
+}
+```
+
+| Field                     | Answer                                                                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `MilsItemDataMediaType`   | `application/json` when a `MilsItemPayload` row exists (what `ItemData` serves), else `null`                                       |
+| `MilsBinaryDataMediaType` | The `StoredFile`'s mime type when its blob is on disk (what `BinaryData` can serve), else `null` — a missing blob would be a `410` |
+| `MilsItemProperties`      | Every property type MILS lists for the item's `ResourceMapping.itemTypeId`, sorted by code; `PropertyValue` absent when unknown    |
+
+Each `PropertyValue` is a string — numbers in plain decimal, never `6.4e+1` —
+and the first of these that has one wins, matching codes case-insensitively:
+
+1. an **operator override** — `MilsItemPayload.propertyData`, now a JSON object
+   `{ "<PropertyCode>": value }` written from the console. Text that is not such
+   an object predates the structure and is ignored with a warning;
+2. the **stored file**: `FileName`, `FileSize`, and `FileVersionNumber` = `1`
+   for an upload (a Drive revision id is not a number, so a Drive file has
+   none);
+3. a top-level scalar of the **payload** whose key is the code.
+
+Concore snapshots use snake_case keys and mostly match nothing, so a Concore
+item lists its codes without values until a curated projection exists (step 6
+of the plan).
+
+**The property list is a local cache, never an upstream read.** MILS scopes
+`/PropertyTypes` per item type (an unfiltered read answers
+`400 "Element 'ItemTypeId' is mandatory"`), and an unauthenticated request must
+not make this node call MILS, so `PropertyTypeRegistration` holds them and the
+**registry sync** fills it — the console's _Sync registry_ and
+`sync:actor-registry`, after actors and nodes. An item type whose read fails
+keeps its previous rows (stale beats empty); a fresh deployment lists items with
+**no** properties until the first sync. The pure parts are
+`mils-internal/property-data.ts` and `property-types/prepare-property-type.ts`,
+both under Vitest.
+
 ## Related
 
 - [`access-control.md`](access-control.md) — the enforced counterpart on `/api/integration/*`, and the resolver that now also answers inbound access requests.
 - [`actors-and-nodes.md`](actors-and-nodes.md) — federated reads: the whole caller side, the switches that gate it, and why a read cannot loop.
 - [`google-drive.md`](google-drive.md) — the file store behind `ItemFile`.
+  `mils-internal-item-list-and-property-data-plan.md`,
   `expose-mils-internal-api-plan.md`,
   `mils-internal-local-implementation-plan.md`,
   `mils-internal-statistics-plan.md`.

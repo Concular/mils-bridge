@@ -49,10 +49,11 @@ and the desktop shell inject values directly.
 
 ### MILS (target)
 
-| Variable        | Default                           | Overridable from Settings              | Read by                         | Notes                                                                                    |
-| --------------- | --------------------------------- | -------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------- |
-| `MILS_BASE_URL` | `https://mils.dynabloqs.dev/rest` | yes (`milsBaseUrl`)                    | `SettingsService.milsBaseUrl()` | Trailing slash stripped.                                                                 |
-| `MILS_JWT`      | empty                             | yes (a stored signing key outranks it) | `MilsClient.authHeaders()`      | Static bearer. Empty + no key ⇒ the browser's `Authorization` header is forwarded as-is. |
+| Variable          | Default                           | Overridable from Settings              | Read by                         | Notes                                                                                    |
+| ----------------- | --------------------------------- | -------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------- |
+| `MILS_BASE_URL`   | `https://mils.dynabloqs.dev/rest` | yes (`milsBaseUrl`)                    | `SettingsService.milsBaseUrl()` | Trailing slash stripped.                                                                 |
+| `MILS_JWT`        | empty                             | yes (a stored signing key outranks it) | `MilsClient.authHeaders()`      | Static bearer. Empty + no key ⇒ the browser's `Authorization` header is forwarded as-is. |
+| `MILS_TIMEOUT_MS` | `30000`                           | no                                     | `mils/mils.client.ts`           | Idle timeout on every MILS call, in milliseconds; `0` = none.                            |
 
 ### Concore (source)
 
@@ -63,6 +64,7 @@ and the desktop shell inject values directly.
 | `CONCORE_API_KEY`    | empty                                      | yes (`concoreApiKey`)     | `SettingsService.concoreAuth()`          | `X-API-Key` header (`AuthAPIKeyWithOrg` scheme).                                                                              |
 | `CONCORE_ORG_ID`     | empty                                      | yes (`concoreOrgId`)      | `concoreOrgId()`, `concore/org-scope.ts` | Sent as the org header with an API key; injected as `organisation_id` into allow-listed list reads. Empty ⇒ nothing injected. |
 | `CONCORE_ORG_HEADER` | `X-Organization-Id`                        | no                        | `SettingsService.keyHeaders()`           | Header name carrying the org id.                                                                                              |
+| `CONCORE_TIMEOUT_MS` | `30000`                                    | no                        | `concore/concore.client.ts`              | Idle timeout on every Concore call, in milliseconds; `0` = none.                                                              |
 
 ### Console sessions
 
@@ -75,10 +77,10 @@ and the desktop shell inject values directly.
 
 ### Actor API (nodes)
 
-| Variable                            | Default | Overridable from Settings | Read by                                          | Notes                                                       |
-| ----------------------------------- | ------- | ------------------------- | ------------------------------------------------ | ----------------------------------------------------------- |
-| `ACTOR_JWT_CLOCK_TOLERANCE_SECONDS` | `60`    | no                        | `actor-registry/actor-token-verifier.service.ts` | Skew allowed on `exp` / `nbf`.                              |
-| `ACTOR_JWT_MAX_TTL_SECONDS`         | `0`     | no                        | `actor-registry/actor-token-verifier.service.ts` | Reject tokens whose `exp − iat` exceeds this. `0` = no cap. |
+| Variable                            | Default | Overridable from Settings | Read by                                          | Notes                                                                                   |
+| ----------------------------------- | ------- | ------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `ACTOR_JWT_CLOCK_TOLERANCE_SECONDS` | `60`    | no                        | `actor-registry/actor-token-verifier.service.ts` | Skew allowed on `exp` / `nbf`.                                                          |
+| `ACTOR_JWT_MAX_TTL_SECONDS`         | `86400` | no                        | `actor-registry/actor-token-verifier.service.ts` | Reject tokens whose `exp − iat` (`exp − now` without `iat`) exceeds this. `0` = no cap. |
 
 ### Google Drive (source)
 
@@ -87,6 +89,19 @@ and the desktop shell inject values directly.
 | `GOOGLE_CLIENT_ID`     | empty   | yes (`googleClientId`)     | `SettingsService.googleOAuth()` | OAuth client of type _Web application_.                                                                                                                 |
 | `GOOGLE_CLIENT_SECRET` | empty   | yes (`googleClientSecret`) | `SettingsService.googleOAuth()` |                                                                                                                                                         |
 | `GOOGLE_REDIRECT_URI`  | empty   | yes (`googleRedirectUri`)  | `SettingsService.googleOAuth()` | Must be registered on the OAuth client verbatim: `<bff origin>/api/integration/google-drive/oauth/callback`. The desktop defaults it to its own origin. |
+
+### Microsoft 365 (source)
+
+SharePoint and OneDrive for Business through Microsoft Graph — [`microsoft-365.md`](microsoft-365.md).
+
+| Variable                      | Default                     | Overridable from Settings | Read by                         | Notes                                                                                                                      |
+| ----------------------------- | --------------------------- | ------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `M365_CLIENT_ID`              | empty                       | yes (`m365ClientId`)      | `SettingsService.m365App()`     | The Entra app (_Web_ platform). Without client id, secret and redirect URI the routes answer `503` naming what is missing. |
+| `M365_CLIENT_SECRET`          | empty                       | yes (`m365ClientSecret`)  | `SettingsService.m365App()`     | Sealed with `SECRETS_KEY` when stored in settings.                                                                         |
+| `M365_TENANT`                 | `organizations`             | yes (`m365Tenant`)        | `SettingsService.m365App()`     | A tenant id or domain to admit only that tenant's work accounts.                                                           |
+| `M365_REDIRECT_URI`           | empty                       | yes (`m365RedirectUri`)   | `SettingsService.m365App()`     | Registered on the Entra app verbatim: `<bff origin>/api/integration/microsoft-365/oauth/callback`.                         |
+| `M365_REQUEST_TIMEOUT_MS`     | `15000`                     | no                        | `microsoft-365/graph.client.ts` | Graph and token calls.                                                                                                     |
+| `M365_DOWNLOAD_HOST_SUFFIXES` | SharePoint / OneDrive hosts | no                        | `microsoft-365/graph.client.ts` | Comma-separated host suffixes a download redirect may go to (`https` only, never a private address).                       |
 
 ### File store
 
@@ -106,6 +121,69 @@ and the desktop shell inject values directly.
 | `API_EXPLORER_CAPTURE_BODY_MAX_BYTES` | `1048576` (1 MiB)   | no                        | `api-explorer/api-exchange.service.ts`       | Bodies above this are truncated in the **recorded** exchange; the upstream body is forwarded whole.                                       |
 | `API_EXPLORER_RETENTION_PER_API`      | `500`               | no                        | `api-explorer/api-exchange.service.ts`       | Newest N exchanges kept per API; older unmapped rows pruned on insert. Also the default for `api-explorer:prune`.                         |
 | `API_EXPLORER_IMPORT_TIMEOUT_MS`      | `15000`             | no                        | `api-explorer/openapi-import.service.ts`     | Fetching an OpenAPI document by URL.                                                                                                      |
+
+### Bulk import
+
+A CSV / JSON / NDJSON file → one element per record — [`bulk-import.md`](bulk-import.md).
+
+| Variable                     | Default             | Overridable from Settings | Read by                             | Notes                                                                                                     |
+| ---------------------------- | ------------------- | ------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `BULK_IMPORT_MAX_BYTES`      | `20971520` (20 MiB) | no                        | `bulk-import/`                      | Largest file accepted.                                                                                    |
+| `BULK_IMPORT_MAX_ROWS`       | `10000`             | no                        | `bulk-import/`                      | Above it the file is refused, never truncated. Also caps an S3 folder import and, by default, an SQL run. |
+| `BULK_IMPORT_CONCURRENCY`    | `4`                 | no                        | `bulk-import/bulk-import.runner.ts` | Rows in flight against MILS per running import.                                                           |
+| `BULK_IMPORT_MAX_RUNNING`    | `2`                 | no                        | `bulk-import/bulk-import.runner.ts` | Imports running at once; the rest wait.                                                                   |
+| `BULK_IMPORT_RETENTION_DAYS` | `31`                | no                        | `bulk-import/`                      | Days a finished import and its rows are kept. Mappings are never pruned.                                  |
+
+### Amazon S3 (source)
+
+[`s3.md`](s3.md). Both switches widen what an administrator can make the server reach, so they are environment, not settings.
+
+| Variable                       | Default                          | Overridable from Settings | Read by           | Notes                                                                                                                                                                              |
+| ------------------------------ | -------------------------------- | ------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `S3_ALLOW_DEFAULT_CREDENTIALS` | unset (off)                      | no                        | `s3/s3-policy.ts` | Truthy lets a `default-chain` connection use the host's own AWS identity (env, shared config, instance profile). On a cloud host that identity may be far broader than one bucket. |
+| `S3_ALLOW_PRIVATE_ENDPOINTS`   | unset (off)                      | no                        | `s3/s3-policy.ts` | Truthy lets a custom endpoint be on loopback / private ranges and plain `http` (a local MinIO). The desktop sets it.                                                               |
+| `S3_REQUEST_TIMEOUT_MS`        | `15000`                          | no                        | `s3/`             | Connect, list and head.                                                                                                                                                            |
+| `S3_DOWNLOAD_TIMEOUT_MS`       | `FILE_STORE_DOWNLOAD_TIMEOUT_MS` | no                        | `s3/`             | Total deadline per download.                                                                                                                                                       |
+
+### Keyed record sources (SQL, push, Notion)
+
+| Variable      | Default | Overridable from Settings | Read by                            | Notes                                                                            |
+| ------------- | ------- | ------------------------- | ---------------------------------- | -------------------------------------------------------------------------------- |
+| `SOURCE_SYNC` | on      | no                        | `records/source-sync.scheduler.ts` | Only the literal `off` stops scheduled syncs. A sync started by hand still runs. |
+
+### SQL sources
+
+PostgreSQL, read-only stored queries — [`sql.md`](sql.md).
+
+| Variable                    | Default                | Overridable from Settings | Read by                           | Notes                                                                                                          |
+| --------------------------- | ---------------------- | ------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `SQL_SOURCES`               | `off`                  | no                        | `sql-source/sql-source.module.ts` | `off` / `on`; only the literal `on` registers the routes. Off means they **404** and nothing dials a database. |
+| `SQL_ALLOW_PRIVATE_TARGETS` | unset (blocked)        | no                        | `sql-source/`                     | Truthy allows loopback / private hosts and `tls: disable`.                                                     |
+| `SQL_CONNECT_TIMEOUT_MS`    | `10000`                | no                        | `sql-source/postgres.driver.ts`   |                                                                                                                |
+| `SQL_STATEMENT_TIMEOUT_MS`  | `60000`                | no                        | `sql-source/postgres.driver.ts`   | Set as `statement_timeout` inside the read-only transaction.                                                   |
+| `SQL_MAX_ROWS`              | `BULK_IMPORT_MAX_ROWS` | no                        | `sql-source/`                     | Above it a run is refused, never truncated.                                                                    |
+
+### Inbound push
+
+Other systems POST signed JSON records to a channel — [`push.md`](push.md).
+
+| Variable                     | Default           | Overridable from Settings | Read by                     | Notes                                                                             |
+| ---------------------------- | ----------------- | ------------------------- | --------------------------- | --------------------------------------------------------------------------------- |
+| `PUSH_INBOUND`               | `off`             | no                        | `push/push.module.ts`       | `off` / `on`; only the literal `on` registers the routes. Off means they **404**. |
+| `PUSH_MAX_BODY_BYTES`        | `5242880` (5 MiB) | no                        | `main.ts` (raw body parser) | Largest delivery.                                                                 |
+| `PUSH_MAX_RECORDS`           | `500`             | no                        | `push/`                     | Records per delivery.                                                             |
+| `PUSH_TIMESTAMP_TOLERANCE_S` | `300`             | no                        | `push/`                     | How far `X-Bridge-Timestamp` may be from now; the replay window.                  |
+| `PUSH_RATE_PER_MINUTE`       | `120`             | no                        | `push/`                     | Deliveries per channel per minute; `0` = no limit.                                |
+| `PUSH_SECRET_OVERLAP_HOURS`  | `24`              | no                        | `push/`                     | How long the previous secret still verifies after a rotation.                     |
+
+### Notion (source)
+
+[`notion.md`](notion.md). Connections and their tokens are added on the console, never in the environment.
+
+| Variable                    | Default | Overridable from Settings | Read by                   | Notes                                                           |
+| --------------------------- | ------- | ------------------------- | ------------------------- | --------------------------------------------------------------- |
+| `NOTION_REQUEST_TIMEOUT_MS` | `15000` | no                        | `notion/notion.client.ts` |                                                                 |
+| `NOTION_RATE_PER_SECOND`    | `3`     | no                        | `notion/notion.client.ts` | Calls per connection per second; one `Retry-After` is honoured. |
 
 ### Access control
 
@@ -170,10 +248,10 @@ it can become the one state that must never read as a grant.)
 
 ### Secrets at rest
 
-| Variable          | Default | Overridable from Settings | Read by                      | Notes                                                                                                                                                                                              |
-| ----------------- | ------- | ------------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Variable          | Default | Overridable from Settings | Read by                      | Notes                                                                                                                                                                                                                                                                                                                   |
+| ----------------- | ------- | ------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SECRETS_KEY`     | unset   | no                        | `common/secret-box.ts`       | 32 bytes, base64 or hex - `openssl rand -base64 32`, or `node -e "console.log(require('node:crypto').randomBytes(32).toString('base64'))"` (more ways in `.env.example`). Encrypts the credential columns with AES-256-GCM. Unset keeps them stored as typed. Boot **fails** if encrypted rows exist and this is unset. |
-| `SECRETS_KEY_OLD` | unset   | no                        | `scripts/encrypt-secrets.ts` | Only for `encrypt:secrets --rotate`: the key the rows were written with.                                                                                                                           |
+| `SECRETS_KEY_OLD` | unset   | no                        | `scripts/encrypt-secrets.ts` | Only for `encrypt:secrets --rotate`: the key the rows were written with.                                                                                                                                                                                                                                                |
 
 ### Rate limiting
 
@@ -218,3 +296,4 @@ environment variable of the same name still wins for `GOOGLE_REDIRECT_URI` and
 
 - [`deployment.md`](deployment.md) — which of these each compose file and the desktop actually set.
 - [`security.md`](security.md) — where the secrets these variables seed end up.
+- [`mils.md`](mils.md), [`concore.md`](concore.md), [`google-drive.md`](google-drive.md) — the settings panels.

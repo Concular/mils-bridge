@@ -130,9 +130,10 @@ it, purely to pick which registry rows to look at.
    `ActorTokenIssuer`, `audience` = `['conc-rest-api', 'conc-mils-api']`, and
    60 s clock tolerance.
 4. `exp` must be present — a token with none would never expire, so it is
-   refused even though its signature is good. Any lifetime cap
-   (`ACTOR_JWT_MAX_TTL_SECONDS`, off by default) is applied here too, measured
-   against `iat`.
+   refused even though its signature is good. The lifetime cap
+   (`ACTOR_JWT_MAX_TTL_SECONDS`, 24 h by default) is applied here too, measured
+   against `iat` — or against the current time when `iat` is absent, so a token
+   without `iat` must not expire more than 24 h ahead.
 5. The certificate's own `notAfter`.
 
 **Step 4 — The request proceeds** as node `blm`, and our per-element access

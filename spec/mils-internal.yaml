@@ -251,9 +251,12 @@ paths:
         - MilsItems
       summary: Retrieves information for an existing milsitem based on the ID provided.
       description: >-
-        The stored payload for this MILS item, returned verbatim as text/plain
-        from the BFF's MilsItemPayload table. Answers 404 when no payload is
-        stored for the item.
+        The stored payload for this MILS item, returned verbatim from the BFF's
+        MilsItemPayload table as application/json — every stored payload is a
+        JSON object, and it is the media type PropertyData advertises for this
+        read (MilsItemDataMediaType). The original BLM document typed this 200
+        as text/plain; the bytes are the same either way. Answers 404 when no
+        payload is stored for the item.
 
 
         A conforming reader asks permission first — for the MILS **Object**
@@ -276,9 +279,10 @@ paths:
         '200':
           description: Successful response.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                type: object
+                additionalProperties: true
   /MilsItems/{ObjectId}/ItemFile:
     get:
       tags:
@@ -326,22 +330,30 @@ paths:
         - MilsItems
       summary: Retrieves information for an existing milsitem based on the ID provided.
       description: >-
-        The property data stored for this MILS item, returned verbatim as
-        text/plain from the BFF's MilsItemPayload table. Answers 404 when none
-        is stored — the same answer, and the same words, as ItemData for an
-        item with no payload.
+        What this node says about the item: its properties, and the media type
+        each payload read answers with. A caller reads this first to learn
+        which of ItemData and BinaryData it can ask for — the shape Block
+        Materials serves and asked every node to serve.
 
 
-        Opaque text, not JSON: the BLM contract types this 200 as a plain
-        string. What belongs in it is values against the schema MILS publishes
-        at /PropertyTypes for this item's ItemTypeId; this node does not
-        validate them against that schema, and does not serve /PropertyTypes
-        itself — the BLM document declares no such operation.
+        MilsItemProperties lists **every** property type MILS publishes for the
+        item's ItemTypeId (GET /PropertyTypes?ItemTypeId=, cached by this node's
+        registry sync), sorted by PropertyCode. PropertyValue is always a
+        string — numbers in plain decimal — and is absent when this node knows
+        no value. Values come from an operator override set in this node's
+        console, then from the stored file (FileName, FileSize,
+        FileVersionNumber), then from a top-level value of the item's payload
+        whose key equals the code (case-insensitively).
 
 
-        Set from this node's console, never derived. Registration has no source
-        for property data, so an item can have a payload and no property data
-        for its whole life.
+        MilsItemDataMediaType is `application/json` when ItemData has a payload
+        to serve, otherwise null. MilsBinaryDataMediaType is the stored file's
+        media type when BinaryData can serve its bytes, otherwise null. A null
+        media type means that read has no data for this item.
+
+
+        Always 200 for an item this node holds, even when no value is known;
+        404 only for an id this node holds nothing for.
 
 
         NOTE the path parameter is an **ItemId**, despite being named ObjectId
@@ -360,9 +372,40 @@ paths:
         '200':
           description: Successful response.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                type: object
+                required:
+                  - MilsId
+                  - MilsItemDataMediaType
+                  - MilsBinaryDataMediaType
+                  - MilsItemProperties
+                properties:
+                  MilsId:
+                    type: string
+                    pattern: '^\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}$'
+                    example: '{3dae906b-2f11-4f3d-90b2-a02ccb4906f8}'
+                  MilsItemDataMediaType:
+                    type: string
+                    nullable: true
+                    example: application/json
+                  MilsBinaryDataMediaType:
+                    type: string
+                    nullable: true
+                    example: image/png
+                  MilsItemProperties:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - PropertyCode
+                      properties:
+                        PropertyCode:
+                          type: string
+                          example: FileName
+                        PropertyValue:
+                          type: string
+                          example: photo.png
   /MilsObjectAccesses:
     post:
       tags:
