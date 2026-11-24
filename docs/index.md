@@ -3,8 +3,8 @@
 The MILS Bridge registers the things your organisation already has — Concore
 entities, files from Google Drive, Microsoft 365 and Amazon S3, rows from SQL
 databases and Notion, records other systems push to it, CSV and JSON files,
-responses from any HTTP API you import, files from your own computer and typed
-JSON values — as **items in MILS**, keeps the
+responses from any HTTP API you import, files from your own computer, typed JSON values, the
+elements of IFC building models and signed SUM4Re digital passports — as **items in MILS**, keeps the
 durable cross-reference between the two, and serves those items back to the
 peer nodes that ask for them. It is one container: a server that talks to the
 upstream systems for you, and a web console that talks only to that server.
@@ -21,7 +21,7 @@ when another node asks.
 | -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Understand what the bridge does and why      | [What this is](what-this-is.md) · [Glossary](glossary.md)                                                |
 | Run a node                                   | [Deployment](deployment.md) · [Configuration](configuration.md)                                          |
-| Connect MILS and the sources you register from | [MILS](mils.md) · [Concore](concore.md) · [Google Drive](google-drive.md) · [Microsoft 365](microsoft-365.md) · [Amazon S3](s3.md) · [SQL](sql.md) · [Notion](notion.md) · [Inbound push](push.md) · [Bulk import](bulk-import.md) · [API Explorer](api-explorer.md) · [Local elements](local-elements.md) |
+| Connect MILS and the sources you register from | [MILS](mils.md) · [Concore](concore.md) · [Google Drive](google-drive.md) · [Microsoft 365](microsoft-365.md) · [Amazon S3](s3.md) · [SQL](sql.md) · [Notion](notion.md) · [Inbound push](push.md) · [Bulk import](bulk-import.md) · [API Explorer](api-explorer.md) · [Local elements](local-elements.md) · [IFC models](ifc.md) · [SUM4Re passports](sum4re.md) |
 | Decide who may read what                     | [Access control](access-control.md) · [Security](security.md)                                            |
 | Connect another node, or connect to one      | [Peer node quickstart](peer-node-quickstart.md) · [Peer node onboarding](peer-node-onboarding.md)        |
 | Implement the contract peers call            | [The `/rest` API](mils-internal-api.md) · [OpenAPI contract](api-reference.md)                           |

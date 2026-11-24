@@ -8,10 +8,60 @@ working.
 
 ## Unreleased
 
+## 0.4.0 — 2026-11-24
+
+Two new sources, building models and signed digital passports, and an MIT
+licence. Run `docker compose pull && docker compose up -d`; migrations apply at
+start-up. Back up the `bridge-data` volume first. The peer contract
+(`spec/mils-internal.yaml`) is unchanged, so 0.3.0 and 0.4.0 nodes read each
+other's items.
+
+### Added
+
+- **[IFC models](docs/ifc.md).** Upload a BIM model as an `.ifc` file (IFC2X3,
+  IFC4 or IFC4X3), or open one attached to a Concore building. Then find its
+  elements in a 3D view, a spatial tree or a table, and publish the ones you
+  choose to MILS: one item per element, keyed by its GlobalId. A new revision
+  of the model updates the published items in place. Compare two revisions
+  element by element, archive what a revision removed, and check a model
+  against IDS files. Optionally, mirror its storeys as MILS Objects, publish
+  type objects instead of occurrences, or publish the `.ifc` itself as one
+  file item, linked from its elements.
+- **[SUM4Re passports](docs/sum4re.md).** Sync the signed digital product
+  passports and building logbooks of the EU SUM4Re project into MILS. Each
+  passport becomes one element, and its signed credential is the item's data
+  unchanged, so peers can verify it themselves. Signatures are checked against
+  issuer keys an administrator pins. The bridge also checks that the signed
+  content matches the document, so an edited passport does not show as
+  verified. Each passport is filed under the building it names. The console
+  shows a **Digital passport** card on each element with the verdict and the
+  related passports, and the relations can be written to MILS as ItemLinks once
+  you choose a link type. Sources are added with the `sum4re:sources` script.
+- **Screenshots in the user guide** (`/guide`): 121 of them, in every chapter
+  except IFC models.
+
 ### Changed
 
-- **MIT licence.** MILS Bridge is now released under the MIT licence; see
-  `LICENSE`. Until now no licence had been chosen.
+- **MIT licence.** MILS Bridge is now released under the [MIT licence](LICENSE).
+  Until now no licence had been chosen. The image carries the
+  `org.opencontainers.image.licenses=MIT` label from this release on.
+- **The Actors list has an Active / Inactive switch.** It always asks MILS for
+  one state, because MILS refuses an Actors read without that filter.
+
+### Fixed
+
+- Active MILS items showed "State 0" and offered **Reactivate**. State 0 is
+  active and 1 is inactive, and the console now reads them that way.
+- A drop-down near the end of a short page was cut off.
+- The node table stretched past its box after **Test connection**.
+
+### Running it
+
+- Processing an IFC model runs in a child process, one at a time by default,
+  with a 2 GiB memory limit (`IFC_PROCESS_MEMORY_MB`). Peak memory is about
+  8× the file size, so give the container room for the models you expect. On a
+  small host, `IFC_FRAGMENTS=off` skips the 3D geometry. Every IFC and SUM4Re
+  setting is in [Configuration](docs/configuration.md).
 
 ## 0.3.0 — 2026-11-13
 
