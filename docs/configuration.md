@@ -185,6 +185,32 @@ Other systems POST signed JSON records to a channel — [`push.md`](push.md).
 | `NOTION_REQUEST_TIMEOUT_MS` | `15000` | no                        | `notion/notion.client.ts` |                                                                 |
 | `NOTION_RATE_PER_SECOND`    | `3`     | no                        | `notion/notion.client.ts` | Calls per connection per second; one `Retry-After` is honoured. |
 
+### IFC models (source)
+
+Upload an IFC model and publish its elements — [`ifc.md`](ifc.md).
+
+| Variable                       | Default                | Overridable from Settings | Read by | Notes                                                                                       |
+| ------------------------------ | ---------------------- | ------------------------- | ------- | ------------------------------------------------------------------------------------------- |
+| `IFC_MAX_BYTES`                | `FILE_STORE_MAX_BYTES` | no                        | `ifc/`  | Largest file accepted, refused on the stream.                                               |
+| `IFC_MAX_ELEMENTS`             | `200000`               | no                        | `ifc/`  | A model above it fails (`TOO_MANY_ELEMENTS`) rather than being truncated.                   |
+| `IFC_MAX_PROCESSING`           | `1`                    | no                        | `ifc/`  | Revisions processed at once.                                                                |
+| `IFC_PROCESS_MEMORY_MB`        | `2048`                 | no                        | `ifc/`  | The processing child is killed above this RSS (`OUT_OF_MEMORY`). Peak is about 8× the file. |
+| `IFC_PROCESS_TIMEOUT_MS`       | `900000` (15 min)      | no                        | `ifc/`  | Wall clock per revision (`TIMEOUT`).                                                        |
+| `IFC_FRAGMENTS`                | on                     | no                        | `ifc/`  | Only the literal `off` skips the 3D geometry, for small hosts.                              |
+| `IFC_SELECTION_RETENTION_DAYS` | `7`                    | no                        | `ifc/`  | How long a stored selection lives.                                                          |
+| `IFC_ALLOW_PRIVATE_DOWNLOADS`  | unset (blocked)        | no                        | `ifc/`  | Truthy lets a Concore `file_url` be plain http or resolve privately (tests, desktop).       |
+
+### SUM4Re passports (source)
+
+Signed digital product passports and building logbooks — [`sum4re.md`](sum4re.md). Sources and their pinned keys are added with the `sum4re:sources` CLI, never in the environment.
+
+| Variable                       | Default           | Overridable from Settings | Read by   | Notes                                                            |
+| ------------------------------ | ----------------- | ------------------------- | --------- | ---------------------------------------------------------------- |
+| `SUM4RE_REQUEST_TIMEOUT_MS`    | `15000`           | no                        | `sum4re/` | Per document.                                                    |
+| `SUM4RE_DOC_MAX_BYTES`         | `1048576` (1 MiB) | no                        | `sum4re/` | A document above it is refused, counted on the stream.           |
+| `SUM4RE_CONCURRENCY`           | `4`               | no                        | `sum4re/` | Documents fetched at once per sync.                              |
+| `SUM4RE_ALLOW_PRIVATE_TARGETS` | unset (blocked)   | no                        | `sum4re/` | Truthy lets a site resolve privately and use plain http (tests). |
+
 ### Access control
 
 | Variable                   | Default        | Overridable from Settings | Read by                                     | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |

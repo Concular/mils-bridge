@@ -80,6 +80,8 @@ nav:
       - Inbound push: push.md
       - Notion: notion.md
       - Microsoft 365: microsoft-365.md
+      - IFC models: ifc.md
+      - SUM4Re passports: sum4re.md
   - Access and peers:
       - Access control: access-control.md
       - Actors and nodes: actors-and-nodes.md
