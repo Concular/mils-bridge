@@ -1,11 +1,27 @@
 # MILS Bridge
 
-The MILS Bridge registers the things your organisation already has — Concore
-entities, Google Drive files, responses from any HTTP API you import, files
-from your own computer and typed JSON values — as **items in MILS**, keeps the
-durable cross-reference between the two, and serves those items back to the
-peer nodes that ask for them. It is one container: a server that talks to the
-upstream systems for you, and a web console that talks only to that server.
+The MILS Bridge registers the things your organisation already has as
+**items in MILS**, keeps the durable cross-reference between the two, and
+serves those items back to the peer nodes that ask for them. It is one
+container: a server that talks to the upstream systems for you, and a web
+console that talks only to that server.
+
+What it registers from:
+
+- **Concore** entities — [`docs/concore.md`](docs/concore.md)
+- **Files** from [Google Drive](docs/google-drive.md),
+  [Microsoft 365](docs/microsoft-365.md) (SharePoint and OneDrive for
+  Business), [Amazon S3](docs/s3.md) and your own computer
+  ([local elements](docs/local-elements.md))
+- **Records** that stay in step with their source: rows from
+  [SQL databases](docs/sql.md), pages of [Notion](docs/notion.md) data
+  sources, and JSON records other systems [push](docs/push.md) to it
+- **Building data:** the elements of [IFC models](docs/ifc.md), and the
+  signed digital product passports and building logbooks of the EU
+  [SUM4Re](docs/sum4re.md) project
+- **Everything else:** CSV, JSON and NDJSON files, one element per record
+  ([bulk import](docs/bulk-import.md)); responses from any HTTP API you import
+  ([API Explorer](docs/api-explorer.md)); and typed JSON values
 
 It is for an organisation that runs a MILS node: you decide what gets
 registered, which peers may read which elements, and what your node answers
