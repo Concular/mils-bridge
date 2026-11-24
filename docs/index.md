@@ -3,9 +3,10 @@
 The MILS Bridge registers the things your organisation already has — Concore
 entities, files from Google Drive, Microsoft 365 and Amazon S3, rows from SQL
 databases and Notion, records other systems push to it, CSV and JSON files,
-responses from any HTTP API you import, files from your own computer, typed JSON values, the
-elements of IFC building models and signed SUM4Re digital passports — as **items in MILS**, keeps the
-durable cross-reference between the two, and serves those items back to the
+responses from any HTTP API you import, files from your own computer, typed
+JSON values, the elements of IFC building models and signed SUM4Re digital
+passports — as **items in MILS**, keeps the durable cross-reference between
+the two, and serves those items back to the
 peer nodes that ask for them. It is one container: a server that talks to the
 upstream systems for you, and a web console that talks only to that server.
 
