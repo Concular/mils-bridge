@@ -8,6 +8,11 @@ working.
 
 ## Unreleased
 
+### Changed
+
+- **MIT licence.** MILS Bridge is now released under the MIT licence; see
+  `LICENSE`. Until now no licence had been chosen.
+
 ## 0.3.0 — 2026-11-13
 
 A clearer Integrations page. Run `docker compose pull && docker compose up -d`;

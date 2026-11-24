@@ -131,7 +131,9 @@ running.
 If you think you have found a security problem, **do not open an issue** — mail
 the Concular team directly and we will come back to you.
 
-No licence has been chosen for this project yet, so: all rights reserved, with
-permission to run the published image. A `LICENSE` file will land here when
-that decision is made, and the image will carry the matching SPDX label in the
-same release.
+## Licence
+
+MILS Bridge is released under the [MIT licence](LICENSE): this repository and
+the published `ghcr.io/concular/mils-bridge` image. Images from the next release
+on carry the `org.opencontainers.image.licenses=MIT` label. The third-party
+packages inside the image keep their own licences.
