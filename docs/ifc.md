@@ -234,6 +234,27 @@ models**. An entry without a `file_url` cannot be opened, and says so.
 `IFC_ALLOW_PRIVATE_DOWNLOADS` relaxes https and the address checks (tests,
 desktop).
 
+The download itself is `IfcService.createRevisionFromStream` (stream → the
+store's `tmp/` under `IFC_MAX_BYTES` → the upload path), which the third
+source shares.
+
+## Opening a GENIA model
+
+`/ifc/new` › **From GENIA** (and Browse › IFC models › GENIA, `/genia`) opens a
+model held by a GENIA server — see genia.md. The revision's header
+keeps `genia: { connectionId, connectionName, projectId, modelId, updatedAt }`
+and the workspace says "opened from GENIA" with a link back to the project.
+
+## IFCZIP
+
+Every way in accepts a zipped IFC (`.ifczip`): `createRevision` sees the ZIP
+signature and unzips the one `.ifc` inside first (`ifc/ifc-zip.ts`) — exactly
+one `.ifc` entry (macOS/Windows noise ignored), stored or deflated, not
+encrypted, no ZIP64; the unzipped bytes counted on the stream against
+`IFC_MAX_BYTES`, and a declared expansion above 200× refused. The revision is
+named after the entry and its header keeps `unzippedFrom`. A refusal is a
+`415` (`413` for size) with the reason.
+
 ## The `.ifc` as a file item
 
 **Publish the IFC file** on the model page publishes the revision's `.ifc` as

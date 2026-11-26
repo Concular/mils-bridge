@@ -82,6 +82,7 @@ nav:
       - Microsoft 365: microsoft-365.md
       - IFC models: ifc.md
       - SUM4Re passports: sum4re.md
+      - Partner embed: embed.md
   - Access and peers:
       - Access control: access-control.md
       - Actors and nodes: actors-and-nodes.md

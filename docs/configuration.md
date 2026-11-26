@@ -211,6 +211,23 @@ Signed digital product passports and building logbooks — [`sum4re.md`](sum4re.
 | `SUM4RE_CONCURRENCY`           | `4`               | no                        | `sum4re/` | Documents fetched at once per sync.                              |
 | `SUM4RE_ALLOW_PRIVATE_TARGETS` | unset (blocked)   | no                        | `sum4re/` | Truthy lets a site resolve privately and use plain http (tests). |
 
+### Partner embed
+
+A read-only view of this node's elements that a partner frames in an `<iframe>` — [`embed.md`](embed.md). Partners are added in the console (Integrations › Partner embed) or with the `embed:partners` CLI, never in the environment.
+
+| Variable                      | Default             | Overridable from Settings | Read by  | Notes                                                                        |
+| ----------------------------- | ------------------- | ------------------------- | -------- | ---------------------------------------------------------------------------- |
+| `EMBED`                       | on                  | no                        | `embed/` | Only the literal `off` disables it; off means the embed routes do not exist. |
+| `EMBED_DIST`                  | `../web/dist-embed` | no                        | `embed/` | The built embed page. The image sets it; change it only for a custom build.  |
+| `EMBED_TOKEN_MAX_TTL_SECONDS` | `900`               | no                        | `embed/` | Longest partner token lifetime, `exp − iat`.                                 |
+| `EMBED_MAX_REFS`              | `25`                | no                        | `embed/` | Elements one view may name.                                                  |
+| `EMBED_OBJECT_MAX_ITEMS`      | `100`               | no                        | `embed/` | Items an `object:` reference expands to.                                     |
+| `EMBED_ALIAS_BATCH_MAX`       | `1000`              | no                        | `embed/` | Aliases per `PUT`.                                                           |
+| `EMBED_PEER_CACHE_SECONDS`    | `300`               | no                        | `embed/` | How long a peer item read for a view is cached.                              |
+| `EMBED_RATE_PER_MINUTE`       | `300`               | no                        | `embed/` | Views per partner per minute; `0` turns the limit off.                       |
+| `EMBED_SECRET_OVERLAP_HOURS`  | `24`                | no                        | `embed/` | How long the previous secret or key still verifies after a rotation.         |
+| `EMBED_ALLOW_HTTP_ORIGINS`    | unset (https only)  | no                        | `embed/` | Truthy lets a partner origin be plain http (desktop, tests).                 |
+
 ### Access control
 
 | Variable                   | Default        | Overridable from Settings | Read by                                     | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
