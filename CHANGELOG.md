@@ -8,6 +8,53 @@ working.
 
 ## Unreleased
 
+## 0.5.0 — 2026-11-26
+
+Partners can now show your elements on their own pages, and the console reads
+and writes MILS item links. Run `docker compose pull && docker compose up -d`;
+six additive migrations apply at start-up. Back up the `bridge-data` volume
+first. The peer contract (`spec/mils-internal.yaml`) is unchanged, so 0.4.0 and
+0.5.0 nodes read each other's items.
+
+### Added
+
+- **[Partner embed](docs/embed.md).** A partner puts one URL in an `<iframe>`
+  and gets a read-only page about one or more of your elements. The page shows
+  the name, item type, object path, properties, linked items, file, digital
+  passport and raw data, plus a side-by-side comparison when the URL names
+  several elements. Partners name elements by **their own ids** (aliases you
+  upload as CSV) or by MILS ids. A partner proves who it is with a short-lived
+  token, signed with a secret this node issued or with the partner's own
+  P-256 key (ES256). Partners on a trusted network can use a **simple link**
+  with a long-lived key instead. **Share** on an element, or **Get link** on a
+  partner, hands you that link. Each partner only sees the roots you allow,
+  and every refused token is logged. The Overview gains a **Partner embed**
+  card with views per day.
+- **Item links.** An item's page shows its outgoing and incoming MILS
+  ItemLinks, and **Link to…** creates one from an item this node owns.
+  Element and object pages list their links too. You name the link type
+  numbers under **Settings › Link types**. The tracker accepts only a fixed set
+  of link types and does not publish it, so the bridge discovers that set and
+  checks every link against it before writing. The `item-links` script does
+  the same from a shell.
+- **Zipped IFC files** (`.ifczip`) are accepted wherever an `.ifc` is.
+- **GENIA (experimental).** Open an IFC model held by a GENIA server in the
+  IFC pipeline. So far it has only been tested against a stand-in server, not
+  a real GENIA installation.
+
+### Changed
+
+- **The partner embed is on by default.** Set `EMBED=off` to remove its routes
+  entirely. Nothing is visible to anyone until you add a partner.
+
+### Running it
+
+- Every `EMBED_*` setting is in [Configuration](docs/configuration.md).
+  Partners are added in the console (**Integrations › Partner embed**) or with
+  the `embed:partners` script.
+- The embed page is served under `/api/embed/v1/frame`. A reverse proxy that
+  already forwards `/api/*` to the bridge needs no change.
+
 ## 0.4.0 — 2026-11-24
 
 Two new sources, building models and signed digital passports, and an MIT
